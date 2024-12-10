@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "vtysapi", "vtysapi\vtysapi.csproj", "{43FCC78E-2BC1-42D1-BE1C-74179544CD6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "vtysapi\API.csproj", "{43FCC78E-2BC1-42D1-BE1C-74179544CD6A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{A9859ECE-C9F7-4A27-B2AC-FF7FFCF1BA04}"
 EndProject
