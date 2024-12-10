@@ -7,7 +7,7 @@ namespace Domain.siparis
 {
     public class Siparis
     {
-        public Guid SiparisID { get; set; }
+        public Guid Id { get; set; }
         public Guid MasaID { get; set; }
         public Guid? MusteriID { get; set; }
         public Guid PersonelID { get; set; }

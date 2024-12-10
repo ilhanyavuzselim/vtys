@@ -2,7 +2,7 @@
 {
     public class Tedarikci
     {
-        public Guid TedarikciID { get; set; }
+        public Guid Id { get; set; }
         public string Ad { get; set; }
         public string Iletisim { get; set; }
     }

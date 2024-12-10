@@ -2,7 +2,7 @@
 {
     public class OdemeTuru
     {
-        public Guid OdemeTuruID { get; set; }
+        public Guid Id { get; set; }
         public string Ad { get; set; }
     }
 

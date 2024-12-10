@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Domain.masa;
 using Infrastructure.Repositories;
+using System.Diagnostics;
 
 namespace WebApi.Controllers
 {
@@ -26,7 +27,7 @@ namespace WebApi.Controllers
 
         // ID ile masa getiren API endpoint'i
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetMasaById(int id)
+        public async Task<IActionResult> GetMasaById(Guid id)
         {
             try
             {
@@ -49,14 +50,14 @@ namespace WebApi.Controllers
             }
 
             await _masaRepository.AddAsync(masa); // Yeni masa eklenir
-            return CreatedAtAction(nameof(GetMasaById), new { id = masa.MasaID }, masa); // Ekleme başarılı ise 201 döndürülür
+            return CreatedAtAction(nameof(GetMasaById), new { id = masa.Id }, masa); // Ekleme başarılı ise 201 döndürülür
         }
 
         // Mevcut bir masayı güncelleyen API endpoint'i
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMasa(Guid id, [FromBody] Masa masa)
         {
-            if (id != masa.MasaID) // Eğer ID'ler eşleşmezse BadRequest döndürülür
+            if (id != masa.Id) // Eğer ID'ler eşleşmezse BadRequest döndürülür
             {
                 return BadRequest("Masa ID'si uyuşmazlığı");
             }
@@ -67,7 +68,7 @@ namespace WebApi.Controllers
 
         // Bir masayı silen API endpoint'i
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMasa(int id)
+        public async Task<IActionResult> DeleteMasa(Guid id)
         {
             try
             {

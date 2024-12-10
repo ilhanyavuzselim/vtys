@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -14,19 +15,31 @@ namespace Infrastructure.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties)
         {
-            return await _dbSet.ToListAsync();
+            IQueryable<T> query = _dbSet;
+
+            // Her Include parametresini ekle
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return await query.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        // GetByIdAsync ile ilişkili verileri yüklemek
+        public async Task<T> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includeProperties)
         {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity == null)
+            IQueryable<T> query = _dbSet;
+
+            // Her Include parametresini ekle
+            foreach (var includeProperty in includeProperties)
             {
-                throw new KeyNotFoundException($"Entity with ID {id} not found.");
+                query = query.Include(includeProperty);
             }
-            return entity;
+
+            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
         }
 
         public async Task AddAsync(T entity)
@@ -37,11 +50,16 @@ namespace Infrastructure.Repositories
 
         public async Task UpdateAsync(T entity)
         {
-            _dbSet.Update(entity);
+            var entry = _context.Entry(entity);
+            if (entry.State == EntityState.Detached)
+            {
+                _context.Attach(entity);
+            }
+            entry.State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var entity = await _dbSet.FindAsync(id);
             if (entity != null)
