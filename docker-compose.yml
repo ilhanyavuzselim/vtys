@@ -1,0 +1,36 @@
+services:
+  # PostgreSQL Servisi
+  db:
+    image: postgres
+    container_name: postgresql_db
+    environment:
+      POSTGRES_USER: vtys
+      POSTGRES_PASSWORD: vtys
+      POSTGRES_DB: vtysdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pg_network
+    ports:
+      - "5432:5432"
+
+  # pgAdmin Servisi
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    networks:
+      - pg_network
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+
+networks:
+  pg_network:
+    driver: bridge
