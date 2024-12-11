@@ -3,8 +3,8 @@ using Domain.masa;
 using Domain.musteri;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using vtysapi.Requests;
 using Microsoft.EntityFrameworkCore;
+using Common.Requests.Rezervasyon;
 
 namespace WebApi.Controllers
 {

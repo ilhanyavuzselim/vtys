@@ -1,4 +1,4 @@
-using Domain.masa;
+﻿using Domain.masa;
 using Domain.musteri;
 using Domain.rezervasyon;
 using Infrastructure.Infrastructure.Data;
@@ -39,4 +39,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.Run("https://*:5003"); // 👈 Use the provided URL when running the application
+
+Environment.SetEnvironmentVariable("API_BASE_URL", app.Urls.First());
+
