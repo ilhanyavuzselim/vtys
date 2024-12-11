@@ -2,6 +2,7 @@
 using Domain.masa;
 using Infrastructure.Repositories;
 using System.Diagnostics;
+using Common.Requests.Masa;
 
 namespace WebApi.Controllers
 {
@@ -42,27 +43,38 @@ namespace WebApi.Controllers
 
         // Yeni masa ekleyen API endpoint'i
         [HttpPost]
-        public async Task<IActionResult> CreateMasa([FromBody] Masa masa)
+        public async Task<IActionResult> CreateMasa([FromBody] CreateMasaRequest masa)
         {
             if (masa == null)
             {
                 return BadRequest("Masa verisi geçersiz");
             }
 
-            await _masaRepository.AddAsync(masa); // Yeni masa eklenir
-            return CreatedAtAction(nameof(GetMasaById), new { id = masa.Id }, masa); // Ekleme başarılı ise 201 döndürülür
+            await _masaRepository.AddAsync(new Masa(MasaNo: masa.MasaNo,Kapasite: masa.Kapasite,Durum: masa.Durum)); // Yeni masa eklenir
+            return CreatedAtAction(nameof(GetMasaById), masa); // Ekleme başarılı ise 201 döndürülür
         }
 
         // Mevcut bir masayı güncelleyen API endpoint'i
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMasa(Guid id, [FromBody] Masa masa)
+        public async Task<IActionResult> UpdateMasa(Guid id, [FromBody] UpdateMasaRequest masa)
         {
-            if (id != masa.Id) // Eğer ID'ler eşleşmezse BadRequest döndürülür
+            if (id != masa.Id)
+            {
+                return BadRequest("Masa ID'si ile URL uyuşmazlığı");
+            }
+
+            var updatedMasa = await _masaRepository.GetByIdAsync(id);
+            
+            if (updatedMasa == null) // Eğer ID'ler eşleşmezse BadRequest döndürülür
             {
                 return BadRequest("Masa ID'si uyuşmazlığı");
             }
+            
+            updatedMasa.MasaNo = masa.MasaNo;
+            updatedMasa.Kapasite = masa.Kapasite;
+            updatedMasa.Durum = masa.Durum;
 
-            await _masaRepository.UpdateAsync(masa); // Masa güncellenir
+            await _masaRepository.UpdateAsync(updatedMasa); // Masa güncellenir
             return NoContent(); // Güncelleme başarılıysa 204 döndürülür
         }
 

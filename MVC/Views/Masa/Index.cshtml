@@ -1,0 +1,70 @@
+﻿@model IEnumerable<Domain.masa.Masa>
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<p>
+    <a asp-action="_Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MasaNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Kapasite)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Durum)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MasaNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Kapasite)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Durum)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "_Edit", new {  id=item.Id  }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "_Delete", new { id = item.Id }) |
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+
+        $("#btnDelete").click(function (e) {
+
+            var url = $(this).data('url');
+
+            var modal = $("#modal-view");
+
+            $.get(url).done(function (data) {
+                modal.html(data);
+                modal.find('.modal').modal('show');
+            });
+        });
+    </script>
+}

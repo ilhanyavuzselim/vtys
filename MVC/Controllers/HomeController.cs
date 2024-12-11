@@ -15,6 +15,7 @@ namespace MVC.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.url = ApiEndpoints.ApiBaseUrl;
             return View();
         }
 

@@ -1,4 +1,4 @@
-﻿namespace vtysapi.Requests
+﻿namespace Common.Requests.Rezervasyon
 {
     public class UpdateRezervasyonRequest
     {

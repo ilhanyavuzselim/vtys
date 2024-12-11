@@ -1,6 +1,4 @@
-﻿using Domain.masa;
-
-namespace vtysapi.Requests
+﻿namespace Common.Requests.Rezervasyon
 {
     public class CreateRezervasyonRequest
     {

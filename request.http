@@ -1,0 +1,3 @@
+DELETE https://localhost:5003/api/Masa/0193b25d-5d74-74a2-a828-039b2c982f6d 
+Content-Type: application/json
+
