@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RestorantDbContext))]
-    partial class RestorantDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241215111014_KisiTableHierarchyUpdate")]
+    partial class KisiTableHierarchyUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,6 +71,11 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
                     b.Property<string>("Soyad")
                         .IsRequired()
                         .HasColumnType("text");
@@ -76,7 +84,9 @@ namespace Infrastructure.Migrations
 
                     b.ToTable("Kisiler", (string)null);
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator().HasValue("Kisi");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Domain.malzeme.Malzeme", b =>
@@ -334,7 +344,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("Musteriler", (string)null);
+                    b.ToTable("Kisiler", (string)null);
+
+                    b.HasDiscriminator().HasValue("Musteri");
                 });
 
             modelBuilder.Entity("Domain.personel.Personel", b =>
@@ -345,7 +357,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("Personeller", (string)null);
+                    b.ToTable("Kisiler", (string)null);
+
+                    b.HasDiscriminator().HasValue("Personel");
                 });
 
             modelBuilder.Entity("Domain.malzeme.Malzeme", b =>
@@ -480,28 +494,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Malzeme");
 
                     b.Navigation("Tedarikci");
-                });
-
-            modelBuilder.Entity("Domain.musteri.Musteri", b =>
-                {
-                    b.HasOne("Domain.kisi.Kisi", "Kisi")
-                        .WithOne()
-                        .HasForeignKey("Domain.musteri.Musteri", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Kisi");
-                });
-
-            modelBuilder.Entity("Domain.personel.Personel", b =>
-                {
-                    b.HasOne("Domain.kisi.Kisi", "Kisi")
-                        .WithOne()
-                        .HasForeignKey("Domain.personel.Personel", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Kisi");
                 });
 
             modelBuilder.Entity("Domain.kategori.Kategori", b =>
