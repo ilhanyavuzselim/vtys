@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RestorantDbContext))]
-    partial class RestorantDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241215093102_SiparisOdemeIdColumnOdemeDurumu")]
+    partial class SiparisOdemeIdColumnOdemeDurumu
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,27 +59,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Kategoriler");
-                });
-
-            modelBuilder.Entity("Domain.kisi.Kisi", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Ad")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Soyad")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Kisiler", (string)null);
-
-                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("Domain.malzeme.Malzeme", b =>
@@ -142,6 +124,29 @@ namespace Infrastructure.Migrations
                     b.ToTable("Menuler");
                 });
 
+            modelBuilder.Entity("Domain.musteri.Musteri", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Soyad")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Telefon")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Musteriler");
+                });
+
             modelBuilder.Entity("Domain.odeme.Odeme", b =>
                 {
                     b.Property<Guid>("Id")
@@ -161,8 +166,6 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OdemeTuruID");
 
-                    b.HasIndex("SiparisID");
-
                     b.ToTable("Odemeler");
                 });
 
@@ -179,6 +182,29 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OdemeTurleri");
+                });
+
+            modelBuilder.Entity("Domain.personel.Personel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Pozisyon")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Soyad")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Personeller");
                 });
 
             modelBuilder.Entity("Domain.rezervasyon.Rezervasyon", b =>
@@ -217,6 +243,12 @@ namespace Infrastructure.Migrations
                     b.Property<Guid?>("MusteriID")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("OdemeDurumu")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("OdemeID")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("PersonelID")
                         .HasColumnType("uuid");
 
@@ -228,6 +260,9 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MasaID");
 
                     b.HasIndex("MusteriID");
+
+                    b.HasIndex("OdemeID")
+                        .IsUnique();
 
                     b.HasIndex("PersonelID");
 
@@ -326,28 +361,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("TedarikSiparisleri");
                 });
 
-            modelBuilder.Entity("Domain.musteri.Musteri", b =>
-                {
-                    b.HasBaseType("Domain.kisi.Kisi");
-
-                    b.Property<string>("Telefon")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.ToTable("Musteriler", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.personel.Personel", b =>
-                {
-                    b.HasBaseType("Domain.kisi.Kisi");
-
-                    b.Property<string>("Pozisyon")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.ToTable("Personeller", (string)null);
-                });
-
             modelBuilder.Entity("Domain.malzeme.Malzeme", b =>
                 {
                     b.HasOne("Domain.tedarikci.Tedarikci", "Tedarikci")
@@ -378,15 +391,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.siparis.Siparis", "Siparis")
-                        .WithMany()
-                        .HasForeignKey("SiparisID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("OdemeTuru");
-
-                    b.Navigation("Siparis");
                 });
 
             modelBuilder.Entity("Domain.rezervasyon.Rezervasyon", b =>
@@ -420,6 +425,12 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("MusteriID");
 
+                    b.HasOne("Domain.odeme.Odeme", "Odeme")
+                        .WithOne("Siparis")
+                        .HasForeignKey("Domain.siparis.Siparis", "OdemeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.personel.Personel", "Personel")
                         .WithMany()
                         .HasForeignKey("PersonelID")
@@ -429,6 +440,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("Masa");
 
                     b.Navigation("Musteri");
+
+                    b.Navigation("Odeme");
 
                     b.Navigation("Personel");
                 });
@@ -482,31 +495,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("Tedarikci");
                 });
 
-            modelBuilder.Entity("Domain.musteri.Musteri", b =>
-                {
-                    b.HasOne("Domain.kisi.Kisi", "Kisi")
-                        .WithOne()
-                        .HasForeignKey("Domain.musteri.Musteri", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Kisi");
-                });
-
-            modelBuilder.Entity("Domain.personel.Personel", b =>
-                {
-                    b.HasOne("Domain.kisi.Kisi", "Kisi")
-                        .WithOne()
-                        .HasForeignKey("Domain.personel.Personel", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Kisi");
-                });
-
             modelBuilder.Entity("Domain.kategori.Kategori", b =>
                 {
                     b.Navigation("Menuler");
+                });
+
+            modelBuilder.Entity("Domain.odeme.Odeme", b =>
+                {
+                    b.Navigation("Siparis")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.siparis.Siparis", b =>

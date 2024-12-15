@@ -8,6 +8,7 @@ namespace Infrastructure
 {
     using Domain.gider;
     using Domain.kategori;
+    using Domain.kisi;
     using Domain.malzeme;
     using Domain.masa;
     using Domain.menu;
@@ -34,6 +35,7 @@ namespace Infrastructure
             public DbSet<Kategori> Kategoriler { get; set; }
             public DbSet<Siparis> Siparisler { get; set; }
             public DbSet<SiparisDetay> SiparisDetaylar { get; set; }
+            public DbSet<Kisi> Kisiler { get; set; }
             public DbSet<Personel> Personeller { get; set; }
             public DbSet<Musteri> Musteriler { get; set; }
             public DbSet<Rezervasyon> Rezervasyonlar { get; set; }
@@ -44,7 +46,24 @@ namespace Infrastructure
             public DbSet<Stok> Stoklar { get; set; }
             public DbSet<TedarikSiparisi> TedarikSiparisleri { get; set; }
             public DbSet<Gider> Giderler { get; set; }
+
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            {
+                modelBuilder.Entity<Kisi>()
+                    .ToTable("Kisiler");
+
+                modelBuilder.Entity<Musteri>()
+                    .ToTable("Musteriler")
+                    .HasOne(m => m.Kisi)
+                    .WithOne()
+                    .HasForeignKey<Musteri>(m => m.Id); 
+
+                modelBuilder.Entity<Personel>()
+                    .ToTable("Personeller")
+                    .HasOne(p => p.Kisi)
+                    .WithOne()
+                    .HasForeignKey<Personel>(p => p.Id); 
+            }
         }
     }
-
 }

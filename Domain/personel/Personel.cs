@@ -1,10 +1,10 @@
-﻿namespace Domain.personel
+﻿using Domain.kisi;
+
+namespace Domain.personel
 {
-    public class Personel
+    public class Personel : Kisi
     {
-        public Guid Id { get; set; }
-        public string Ad { get; set; }
-        public string Soyad { get; set; }
+        public Kisi Kisi { get; set; }
         public string Pozisyon { get; set; }
     }
 
