@@ -68,6 +68,10 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Discriminator")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
                     b.Property<string>("Soyad")
                         .IsRequired()
                         .HasColumnType("text");
@@ -330,6 +334,9 @@ namespace Infrastructure.Migrations
                 {
                     b.HasBaseType("Domain.kisi.Kisi");
 
+                    b.Property<Guid>("MusteriId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Telefon")
                         .IsRequired()
                         .HasColumnType("text");
@@ -340,6 +347,9 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.personel.Personel", b =>
                 {
                     b.HasBaseType("Domain.kisi.Kisi");
+
+                    b.Property<Guid>("PersonelId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Pozisyon")
                         .IsRequired()
@@ -484,24 +494,20 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.musteri.Musteri", b =>
                 {
-                    b.HasOne("Domain.kisi.Kisi", "Kisi")
+                    b.HasOne("Domain.kisi.Kisi", null)
                         .WithOne()
                         .HasForeignKey("Domain.musteri.Musteri", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Kisi");
                 });
 
             modelBuilder.Entity("Domain.personel.Personel", b =>
                 {
-                    b.HasOne("Domain.kisi.Kisi", "Kisi")
+                    b.HasOne("Domain.kisi.Kisi", null)
                         .WithOne()
                         .HasForeignKey("Domain.personel.Personel", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Kisi");
                 });
 
             modelBuilder.Entity("Domain.kategori.Kategori", b =>

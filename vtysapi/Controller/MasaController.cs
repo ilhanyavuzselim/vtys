@@ -49,9 +49,9 @@ namespace WebApi.Controllers
             {
                 return BadRequest("Masa verisi geçersiz");
             }
-
-            await _masaRepository.AddAsync(new Masa(MasaNo: masa.MasaNo,Kapasite: masa.Kapasite,Durum: masa.Durum)); // Yeni masa eklenir
-            return CreatedAtAction(nameof(GetMasaById), masa); // Ekleme başarılı ise 201 döndürülür
+            Masa m = new Masa(MasaNo: masa.MasaNo, Kapasite: masa.Kapasite, Durum: masa.Durum);
+            await _masaRepository.AddAsync(m); // Yeni masa eklenir
+            return CreatedAtAction(nameof(GetMasaById), new { id = m.Id } , masa); // Ekleme başarılı ise 201 döndürülür
         }
 
         // Mevcut bir masayı güncelleyen API endpoint'i
