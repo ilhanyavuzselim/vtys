@@ -1,3 +1,4 @@
+
 -- Table: public.Kisiler
 
 -- DROP TABLE IF EXISTS public."Kisiler";
@@ -65,60 +66,60 @@ ALTER TABLE IF EXISTS public."Personeller"
 
 
 BEGIN
-    -- 1. Kisiler tablosunda mevcut kiþi kaydýný güncelle
+    -- 1. Kisiler tablosunda mevcut kiï¿½i kaydï¿½nï¿½ gï¿½ncelle
     UPDATE public."Kisiler"
     SET "Discriminator" = 'Personel'
     WHERE "Id" = p_kisi_id;
 
-    -- 2. Personeller tablosuna yeni personel kaydýný ekle
+    -- 2. Personeller tablosuna yeni personel kaydï¿½nï¿½ ekle
     INSERT INTO public."Personeller"(
         "Id", "Ad", "Soyad", "Discriminator", "PersonelId", "Pozisyon")
     VALUES (
-        p_kisi_id,  -- Kiþinin ID'sini personel ID'si olarak kullan
+        p_kisi_id,  -- Kiï¿½inin ID'sini personel ID'si olarak kullan
         (SELECT "Ad" FROM public."Kisiler" WHERE "Id" = p_kisi_id LIMIT 1),
         (SELECT "Soyad" FROM public."Kisiler" WHERE "Id" = p_kisi_id LIMIT 1),
-        'Personel',  -- Discriminator deðeri
-        p_kisi_id,  -- PersonelId, Kisiler tablosundaki kiþinin ID'si
-        p_pozisyon  -- Pozisyon parametre olarak alýndý
+        'Personel',  -- Discriminator deï¿½eri
+        p_kisi_id,  -- PersonelId, Kisiler tablosundaki kiï¿½inin ID'si
+        p_pozisyon  -- Pozisyon parametre olarak alï¿½ndï¿½
     );
 END;
 
 
 BEGIN
-    -- Kisiler tablosuna yeni kiþi kaydýný ekle
+    -- Kisiler tablosuna yeni kiï¿½i kaydï¿½nï¿½ ekle
     INSERT INTO public."Kisiler"(
         "Id", "Ad", "Soyad", "Discriminator"
     )
-    VALUES (gen_random_uuid(), p_ad, p_soyad, 'Kiþi');
+    VALUES (gen_random_uuid(), p_ad, p_soyad, 'Kiï¿½i');
 END;
 
 
 
 DECLARE
-    new_id UUID;  -- Yeni oluþturulan Id'yi saklamak için deðiþken
+    new_id UUID;  -- Yeni oluï¿½turulan Id'yi saklamak iï¿½in deï¿½iï¿½ken
 BEGIN
-    -- Kisiler tablosuna yeni kiþi kaydýný ekle
+    -- Kisiler tablosuna yeni kiï¿½i kaydï¿½nï¿½ ekle
     INSERT INTO public."Kisiler"(
         "Id", "Ad", "Soyad", "Discriminator"
     )
-    VALUES (gen_random_uuid(), p_ad, p_soyad, 'Kiþi')
-    RETURNING "Id" INTO new_id;  -- Yeni oluþturulan Id'yi 'new_id' deðiþkenine al
+    VALUES (gen_random_uuid(), p_ad, p_soyad, 'Kiï¿½i')
+    RETURNING "Id" INTO new_id;  -- Yeni oluï¿½turulan Id'yi 'new_id' deï¿½iï¿½kenine al
 
-    -- create_personel_via_Existed_kisi prosedürünü çaðýr
-    CALL create_personel_via_Existed_kisi(new_id, p_pozisyon);  -- Yeni Id ve pozisyonu gönder
+    -- create_personel_via_Existed_kisi prosedï¿½rï¿½nï¿½ ï¿½aï¿½ï¿½r
+    CALL create_personel_via_Existed_kisi(new_id, p_pozisyon);  -- Yeni Id ve pozisyonu gï¿½nder
 END;
 
 
 
 BEGIN
-    -- Kisiler tablosunda ilgili kiþiyi güncelle
+    -- Kisiler tablosunda ilgili kiï¿½iyi gï¿½ncelle
     UPDATE public."Kisiler"
     SET 
         "Ad" = p_ad,
         "Soyad" = p_soyad
     WHERE "Id" = p_id;
 
-    -- Personel tablosundaki pozisyon bilgisini güncelle
+    -- Personel tablosundaki pozisyon bilgisini gï¿½ncelle
     UPDATE public."Personeller"
     SET "Pozisyon" = p_pozisyon
     WHERE "Id" = p_id;
@@ -127,11 +128,11 @@ END;
 
 
 BEGIN
-    -- Personel kaydý silindiðinde, Kisiler tablosundaki ilgili kaydýn Discriminator'ýný 'Kiþi' yap
+    -- Personel kaydï¿½ silindiï¿½inde, Kisiler tablosundaki ilgili kaydï¿½n Discriminator'ï¿½nï¿½ 'Kiï¿½i' yap
     UPDATE public."Kisiler"
-    SET "Discriminator" = 'Kiþi'
-    WHERE "Id" = OLD."Id";  -- Silinen kaydýn ID'sine göre güncelleme yapýyoruz
-    RETURN OLD;  -- Trigger'ýn iþlem sonunda silinen kaydý döndürmesi gerekiyor
+    SET "Discriminator" = 'Kiï¿½i'
+    WHERE "Id" = OLD."Id";  -- Silinen kaydï¿½n ID'sine gï¿½re gï¿½ncelleme yapï¿½yoruz
+    RETURN OLD;  -- Trigger'ï¿½n iï¿½lem sonunda silinen kaydï¿½ dï¿½ndï¿½rmesi gerekiyor
 END;
 
 
@@ -140,3 +141,47 @@ CREATE OR REPLACE TRIGGER trigger_update_kisiler_discriminator
     ON public."Personeller"
     FOR EACH ROW
     EXECUTE FUNCTION public.update_kisiler_discriminator_on_delete();
+
+
+BEGIN
+    -- Giderler tablosuna yeni bir gider kaydÄ± ekleme
+    INSERT INTO public."Giderler" ("Id", "Ad", "Tutar", "Tarih")
+    VALUES (
+        gen_random_uuid(),  -- UUID oluÅŸturulacak
+        'Tedarik SipariÅŸi',  -- Gider adÄ±
+        NEW."BirimFiyat" * NEW."Miktar",  -- BirimFiyat ve Miktar'Ä± Ã§arparak gider tutarÄ±nÄ± hesapla
+        CURRENT_TIMESTAMP  -- GeÃ§erli zaman
+    );
+    
+    RETURN NEW;  -- Yeni kaydÄ±n eklenmesine izin verir
+END;
+
+BEGIN
+    UPDATE public."Masalar"
+    SET "Durum" = false
+    WHERE "Id" = NEW."MasaID";
+    RETURN NEW;
+END;
+
+BEGIN
+    DELETE FROM public."Rezervasyonlar" WHERE "MusteriID" = OLD."Id";
+    DELETE FROM public."Siparisler" WHERE "MusteriID" = OLD."Id";
+    RETURN OLD;
+END;
+
+BEGIN
+    -- Stokta malzeme mevcut mu kontrol et
+    IF EXISTS (SELECT 1 FROM public."Stoklar" WHERE "MalzemeID" = NEW."MalzemeID") THEN
+        -- EÄŸer stokta varsa, mevcut miktarÄ± artÄ±r
+        UPDATE public."Stoklar"
+        SET "Miktar" = "Miktar" + NEW."Miktar"
+        WHERE "MalzemeID" = NEW."MalzemeID";
+    ELSE
+        -- EÄŸer stokta yoksa, yeni bir stok kaydÄ± ekle
+        INSERT INTO public."Stoklar" ("Id", "MalzemeID", "Miktar")
+        VALUES (gen_random_uuid(), NEW."MalzemeID", NEW."Miktar");
+    END IF;
+
+    RETURN NEW;
+END;
+
