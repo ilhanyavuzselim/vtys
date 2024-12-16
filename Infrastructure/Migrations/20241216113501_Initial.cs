@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,170 +15,136 @@ namespace Infrastructure.Migrations
                 name: "Giderler",
                 columns: table => new
                 {
-                    GiderID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Ad = table.Column<string>(type: "text", nullable: false),
                     Tutar = table.Column<decimal>(type: "numeric", nullable: false),
                     Tarih = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Giderler", x => x.GiderID);
+                    table.PrimaryKey("PK_Giderler", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Kategoriler",
                 columns: table => new
                 {
-                    KategoriID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Ad = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Kategoriler", x => x.KategoriID);
+                    table.PrimaryKey("PK_Kategoriler", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Kisiler",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Ad = table.Column<string>(type: "text", nullable: false),
+                    Soyad = table.Column<string>(type: "text", nullable: false),
+                    Discriminator = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Kisiler", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Masalar",
                 columns: table => new
                 {
-                    MasaID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     MasaNo = table.Column<int>(type: "integer", nullable: false),
                     Kapasite = table.Column<int>(type: "integer", nullable: false),
                     Durum = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Masalar", x => x.MasaID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Musteriler",
-                columns: table => new
-                {
-                    MusteriID = table.Column<Guid>(type: "uuid", nullable: false),
-                    Ad = table.Column<string>(type: "text", nullable: false),
-                    Soyad = table.Column<string>(type: "text", nullable: false),
-                    Telefon = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Musteriler", x => x.MusteriID);
+                    table.PrimaryKey("PK_Masalar", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "OdemeTurleri",
                 columns: table => new
                 {
-                    OdemeTuruID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Ad = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OdemeTurleri", x => x.OdemeTuruID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Personeller",
-                columns: table => new
-                {
-                    PersonelID = table.Column<Guid>(type: "uuid", nullable: false),
-                    Ad = table.Column<string>(type: "text", nullable: false),
-                    Soyad = table.Column<string>(type: "text", nullable: false),
-                    Pozisyon = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Personeller", x => x.PersonelID);
+                    table.PrimaryKey("PK_OdemeTurleri", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Tedarikciler",
                 columns: table => new
                 {
-                    TedarikciID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Ad = table.Column<string>(type: "text", nullable: false),
                     Iletisim = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tedarikciler", x => x.TedarikciID);
+                    table.PrimaryKey("PK_Tedarikciler", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Menuler",
                 columns: table => new
                 {
-                    MenuID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Ad = table.Column<string>(type: "text", nullable: false),
                     Fiyat = table.Column<decimal>(type: "numeric", nullable: false),
                     KategoriID = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Menuler", x => x.MenuID);
+                    table.PrimaryKey("PK_Menuler", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Menuler_Kategoriler_KategoriID",
                         column: x => x.KategoriID,
                         principalTable: "Kategoriler",
-                        principalColumn: "KategoriID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Rezervasyonlar",
+                name: "Musteriler",
                 columns: table => new
                 {
-                    RezervasyonID = table.Column<Guid>(type: "uuid", nullable: false),
-                    MasaID = table.Column<Guid>(type: "uuid", nullable: false),
-                    MusteriID = table.Column<Guid>(type: "uuid", nullable: false),
-                    RezervasyonTarihi = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MusteriId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Telefon = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rezervasyonlar", x => x.RezervasyonID);
+                    table.PrimaryKey("PK_Musteriler", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Rezervasyonlar_Masalar_MasaID",
-                        column: x => x.MasaID,
-                        principalTable: "Masalar",
-                        principalColumn: "MasaID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Rezervasyonlar_Musteriler_MusteriID",
-                        column: x => x.MusteriID,
-                        principalTable: "Musteriler",
-                        principalColumn: "MusteriID",
+                        name: "FK_Musteriler_Kisiler_Id",
+                        column: x => x.Id,
+                        principalTable: "Kisiler",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Siparisler",
+                name: "Personeller",
                 columns: table => new
                 {
-                    SiparisID = table.Column<Guid>(type: "uuid", nullable: false),
-                    MasaID = table.Column<Guid>(type: "uuid", nullable: false),
-                    MusteriID = table.Column<Guid>(type: "uuid", nullable: true),
-                    PersonelID = table.Column<Guid>(type: "uuid", nullable: false),
-                    SiparisTarihi = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PersonelId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Pozisyon = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Siparisler", x => x.SiparisID);
+                    table.PrimaryKey("PK_Personeller", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Siparisler_Masalar_MasaID",
-                        column: x => x.MasaID,
-                        principalTable: "Masalar",
-                        principalColumn: "MasaID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Siparisler_Musteriler_MusteriID",
-                        column: x => x.MusteriID,
-                        principalTable: "Musteriler",
-                        principalColumn: "MusteriID");
-                    table.ForeignKey(
-                        name: "FK_Siparisler_Personeller_PersonelID",
-                        column: x => x.PersonelID,
-                        principalTable: "Personeller",
-                        principalColumn: "PersonelID",
+                        name: "FK_Personeller_Kisiler_Id",
+                        column: x => x.Id,
+                        principalTable: "Kisiler",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -186,70 +152,76 @@ namespace Infrastructure.Migrations
                 name: "Malzemeler",
                 columns: table => new
                 {
-                    MalzemeID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Ad = table.Column<string>(type: "text", nullable: false),
                     TedarikciID = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Malzemeler", x => x.MalzemeID);
+                    table.PrimaryKey("PK_Malzemeler", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Malzemeler_Tedarikciler_TedarikciID",
                         column: x => x.TedarikciID,
                         principalTable: "Tedarikciler",
-                        principalColumn: "TedarikciID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Odemeler",
+                name: "Rezervasyonlar",
                 columns: table => new
                 {
-                    OdemeID = table.Column<Guid>(type: "uuid", nullable: false),
-                    SiparisID = table.Column<Guid>(type: "uuid", nullable: false),
-                    OdemeTuruID = table.Column<Guid>(type: "uuid", nullable: false),
-                    Tutar = table.Column<decimal>(type: "numeric", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MasaID = table.Column<Guid>(type: "uuid", nullable: false),
+                    MusteriID = table.Column<Guid>(type: "uuid", nullable: false),
+                    RezervasyonTarihi = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Odemeler", x => x.OdemeID);
+                    table.PrimaryKey("PK_Rezervasyonlar", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Odemeler_OdemeTurleri_OdemeTuruID",
-                        column: x => x.OdemeTuruID,
-                        principalTable: "OdemeTurleri",
-                        principalColumn: "OdemeTuruID",
+                        name: "FK_Rezervasyonlar_Masalar_MasaID",
+                        column: x => x.MasaID,
+                        principalTable: "Masalar",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Odemeler_Siparisler_SiparisID",
-                        column: x => x.SiparisID,
-                        principalTable: "Siparisler",
-                        principalColumn: "SiparisID",
+                        name: "FK_Rezervasyonlar_Musteriler_MusteriID",
+                        column: x => x.MusteriID,
+                        principalTable: "Musteriler",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "SiparisDetaylar",
+                name: "Siparisler",
                 columns: table => new
                 {
-                    SiparisDetayID = table.Column<Guid>(type: "uuid", nullable: false),
-                    SiparisID = table.Column<Guid>(type: "uuid", nullable: false),
-                    MenuID = table.Column<Guid>(type: "uuid", nullable: false),
-                    Adet = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MasaID = table.Column<Guid>(type: "uuid", nullable: false),
+                    MusteriID = table.Column<Guid>(type: "uuid", nullable: true),
+                    PersonelID = table.Column<Guid>(type: "uuid", nullable: false),
+                    SiparisTarihi = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SiparisDetaylar", x => x.SiparisDetayID);
+                    table.PrimaryKey("PK_Siparisler", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SiparisDetaylar_Menuler_MenuID",
-                        column: x => x.MenuID,
-                        principalTable: "Menuler",
-                        principalColumn: "MenuID",
+                        name: "FK_Siparisler_Masalar_MasaID",
+                        column: x => x.MasaID,
+                        principalTable: "Masalar",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SiparisDetaylar_Siparisler_SiparisID",
-                        column: x => x.SiparisID,
-                        principalTable: "Siparisler",
-                        principalColumn: "SiparisID",
+                        name: "FK_Siparisler_Musteriler_MusteriID",
+                        column: x => x.MusteriID,
+                        principalTable: "Musteriler",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Siparisler_Personeller_PersonelID",
+                        column: x => x.PersonelID,
+                        principalTable: "Personeller",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -257,18 +229,18 @@ namespace Infrastructure.Migrations
                 name: "Stoklar",
                 columns: table => new
                 {
-                    StokID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     MalzemeID = table.Column<Guid>(type: "uuid", nullable: false),
                     Miktar = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stoklar", x => x.StokID);
+                    table.PrimaryKey("PK_Stoklar", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Stoklar_Malzemeler_MalzemeID",
                         column: x => x.MalzemeID,
                         principalTable: "Malzemeler",
-                        principalColumn: "MalzemeID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -276,25 +248,79 @@ namespace Infrastructure.Migrations
                 name: "TedarikSiparisleri",
                 columns: table => new
                 {
-                    TedarikSiparisiID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TedarikciID = table.Column<Guid>(type: "uuid", nullable: false),
                     MalzemeID = table.Column<Guid>(type: "uuid", nullable: false),
+                    BirimFiyat = table.Column<decimal>(type: "numeric", nullable: false),
+                    Miktar = table.Column<decimal>(type: "numeric", nullable: false),
                     SiparisTarihi = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TedarikSiparisleri", x => x.TedarikSiparisiID);
+                    table.PrimaryKey("PK_TedarikSiparisleri", x => x.Id);
                     table.ForeignKey(
                         name: "FK_TedarikSiparisleri_Malzemeler_MalzemeID",
                         column: x => x.MalzemeID,
                         principalTable: "Malzemeler",
-                        principalColumn: "MalzemeID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TedarikSiparisleri_Tedarikciler_TedarikciID",
                         column: x => x.TedarikciID,
                         principalTable: "Tedarikciler",
-                        principalColumn: "TedarikciID",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Odemeler",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SiparisID = table.Column<Guid>(type: "uuid", nullable: false),
+                    OdemeTuruID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Tutar = table.Column<decimal>(type: "numeric", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Odemeler", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Odemeler_OdemeTurleri_OdemeTuruID",
+                        column: x => x.OdemeTuruID,
+                        principalTable: "OdemeTurleri",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Odemeler_Siparisler_SiparisID",
+                        column: x => x.SiparisID,
+                        principalTable: "Siparisler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SiparisDetaylar",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SiparisID = table.Column<Guid>(type: "uuid", nullable: false),
+                    MenuID = table.Column<Guid>(type: "uuid", nullable: false),
+                    Adet = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SiparisDetaylar", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SiparisDetaylar_Menuler_MenuID",
+                        column: x => x.MenuID,
+                        principalTable: "Menuler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SiparisDetaylar_Siparisler_SiparisID",
+                        column: x => x.SiparisID,
+                        principalTable: "Siparisler",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -416,6 +442,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tedarikciler");
+
+            migrationBuilder.DropTable(
+                name: "Kisiler");
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using Domain.masa;
+﻿using Domain.kisi;
+using Domain.masa;
 using Domain.musteri;
+using Domain.personel;
 using Domain.rezervasyon;
 using Infrastructure.Infrastructure.Data;
 using Infrastructure.Repositories;
@@ -22,6 +24,8 @@ builder.Services.AddDbContext<RestorantDbContext>(options =>
 builder.Services.AddScoped<IRepository<Masa>, Repository<Masa>>();
 builder.Services.AddScoped<IRepository<Musteri>, Repository<Musteri>>();
 builder.Services.AddScoped<IRepository<Rezervasyon>, Repository<Rezervasyon>>();
+builder.Services.AddScoped<IRepository<Kisi>, Repository<Kisi>>();
+builder.Services.AddScoped<IRepository<Personel>, Repository<Personel>>();
 
 
 var app = builder.Build();

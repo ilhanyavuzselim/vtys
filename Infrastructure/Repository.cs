@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
@@ -72,5 +73,36 @@ namespace Infrastructure.Repositories
                 throw new KeyNotFoundException($"Entity with ID {id} not found.");
             }
         }
+
+        public async Task ExecuteStoredProcedureAsync(string storedProcedureName, Dictionary<string, object> parameters)
+        {
+            // Generate SQL command
+            var sqlCommand = GenerateSqlCommand(storedProcedureName, parameters);
+
+            // Create NpgsqlParameter objects to pass to the query
+            var sqlParameters = parameters.Select(p => new NpgsqlParameter($"@{p.Key}", p.Value ?? DBNull.Value)).ToArray();
+
+            // Execute the query asynchronously with parameters
+            await _context.Database.ExecuteSqlRawAsync(sqlCommand, sqlParameters);
+        }
+
+        public async Task<List<T>> ExecuteStoredProcedureWithResultAsync(string storedProcedureName, Dictionary<string, object> parameters) 
+        {
+            var sqlCommand = GenerateSqlCommand(storedProcedureName, parameters);
+            var sqlParameters = parameters.Select(p => new NpgsqlParameter($"@{p.Key}", p.Value ?? DBNull.Value)).ToArray();
+
+            return await _context.Set<T>().FromSqlRaw(sqlCommand, sqlParameters).ToListAsync();
+        }
+
+        private string GenerateSqlCommand(string storedProcedureName, Dictionary<string, object> parameters)
+        {
+            // Creating the parameter list for the SQL query (Named parameters: @p_kisi_id, @p_pozisyon, etc.)
+            var parameterList = string.Join(", ", parameters.Keys.Select(k => $"@{k}"));
+
+            // Returning the stored procedure call with the generated parameter list
+            return $"CALL {storedProcedureName}({parameterList})";
+        }
+
+
     }
 }

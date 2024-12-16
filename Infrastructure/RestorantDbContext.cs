@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Infrastructure
+﻿namespace Infrastructure
 {
+    using Common.Consts;
     using Domain.gider;
     using Domain.kategori;
     using Domain.kisi;
@@ -49,20 +44,22 @@ namespace Infrastructure
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
+                base.OnModelCreating(modelBuilder);
+
                 modelBuilder.Entity<Kisi>()
                     .ToTable("Kisiler");
 
+                modelBuilder.Entity<Personel>()
+                    .ToTable("Personeller");
+
                 modelBuilder.Entity<Musteri>()
-                    .ToTable("Musteriler")
-                    .HasOne(m => m.Kisi)
-                    .WithOne()
-                    .HasForeignKey<Musteri>(m => m.Id); 
+                    .ToTable("Musteriler");
 
                 modelBuilder.Entity<Personel>()
-                    .ToTable("Personeller")
-                    .HasOne(p => p.Kisi)
-                    .WithOne()
-                    .HasForeignKey<Personel>(p => p.Id); 
+                    .HasBaseType<Kisi>();
+
+                modelBuilder.Entity<Musteri>()
+                    .HasBaseType<Kisi>();
             }
         }
     }

@@ -9,5 +9,7 @@ namespace Infrastructure.Repositories
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(Guid id);
+        Task ExecuteStoredProcedureAsync(string storedProcedureName, Dictionary<string, object> parameters);
+        Task<List<T>> ExecuteStoredProcedureWithResultAsync(string storedProcedureName, Dictionary<string, object> parameters);
     }
 }
