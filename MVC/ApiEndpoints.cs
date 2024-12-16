@@ -4,14 +4,20 @@
     {
         // API Base URL
         public static string ApiBaseUrl { get; private set; } = string.Empty;
+        public static string SwaggerUrl { get; private set; } = string.Empty;
 
         // API'yi başlatan metot
         public static void Initialize(IConfiguration configuration)
         {
             var url = configuration.GetSection("ApiSettings:BaseUrl").Value + "/api";
+            var swaggerUrl = configuration.GetSection("ApiSettings:BaseUrl").Value + "/swagger/index.html";
             if (url != null)
             {
                 ApiBaseUrl = url;
+            }
+            if(swaggerUrl != null)
+            {
+                SwaggerUrl = swaggerUrl;
             }
         }
 
