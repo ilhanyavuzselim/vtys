@@ -27,7 +27,7 @@ namespace WebApi.Controllers.MusteriController
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPersonelById(Guid id)
+        public async Task<IActionResult> GetMusteriById(Guid id)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace WebApi.Controllers.MusteriController
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePersonel([FromBody] CreateMusteriRequest musteri)
+        public async Task<IActionResult> CreateMusteri([FromBody] CreateMusteriRequest musteri)
         {
             if (musteri == null)
             {
@@ -80,7 +80,7 @@ namespace WebApi.Controllers.MusteriController
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePersonel(Guid id, [FromBody] UpdateMusteriRequest musteri)
+        public async Task<IActionResult> UpdateMusteri(Guid id, [FromBody] UpdateMusteriRequest musteri)
         {
             if(musteri == null)
             {
@@ -107,7 +107,7 @@ namespace WebApi.Controllers.MusteriController
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePersonel(Guid id)
+        public async Task<IActionResult> DeleteMusteri(Guid id)
         {
             try
             {

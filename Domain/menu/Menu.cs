@@ -5,11 +5,10 @@ namespace Domain.menu
     public class Menu
     {
         public Guid Id { get; set; }
-        public string Ad { get; set; }
+        public string? Ad { get; set; }
         public decimal Fiyat { get; set; }
         public Guid KategoriID { get; set; }
-
-        public Kategori Kategori { get; set; }
+        public Kategori? Kategori { get; set; }
     }
 
 }

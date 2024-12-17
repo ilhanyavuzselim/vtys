@@ -11,36 +11,32 @@ namespace WebApi.Controllers.MasaController
     {
         private readonly IRepository<Masa> _masaRepository;
 
-        // Constructor Injection ile IRepository<Masalar> referansı alınır
         public MasaController(IRepository<Masa> masaRepository)
         {
             _masaRepository = masaRepository;
         }
 
-        // Tüm masaları getiren API endpoint'i
         [HttpGet]
         public async Task<IActionResult> GetAllMasalar()
         {
             var masalar = await _masaRepository.GetAllAsync();
-            return Ok(masalar);  // Masalar listesi döndürülür
+            return Ok(masalar);  
         }
 
-        // ID ile masa getiren API endpoint'i
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMasaById(Guid id)
         {
             try
             {
-                var masa = await _masaRepository.GetByIdAsync(id); // ID'ye göre masa getirilir
-                return Ok(masa); // Masa bulunursa, OK döndürülür
+                var masa = await _masaRepository.GetByIdAsync(id); 
+                return Ok(masa); 
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message); // Masa bulunamazsa, 404 NotFound döndürülür
+                return NotFound(ex.Message); 
             }
         }
 
-        // Yeni masa ekleyen API endpoint'i
         [HttpPost]
         public async Task<IActionResult> CreateMasa([FromBody] CreateMasaRequest masa)
         {
@@ -48,12 +44,16 @@ namespace WebApi.Controllers.MasaController
             {
                 return BadRequest("Masa verisi geçersiz");
             }
-            Masa m = new Masa(MasaNo: masa.MasaNo, Kapasite: masa.Kapasite, Durum: masa.Durum);
-            await _masaRepository.AddAsync(m); // Yeni masa eklenir
-            return CreatedAtAction(nameof(GetMasaById), new { id = m.Id } , masa); // Ekleme başarılı ise 201 döndürülür
+            Masa m = new Masa()
+            {
+                Kapasite = masa.Kapasite,
+                MasaNo = masa.MasaNo,
+                Durum = masa.Durum
+            };
+            await _masaRepository.AddAsync(m); 
+            return CreatedAtAction(nameof(GetMasaById), new { id = m.Id } , masa); 
         }
 
-        // Mevcut bir masayı güncelleyen API endpoint'i
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMasa(Guid id, [FromBody] UpdateMasaRequest masa)
         {
@@ -64,7 +64,7 @@ namespace WebApi.Controllers.MasaController
 
             var updatedMasa = await _masaRepository.GetByIdAsync(id);
             
-            if (updatedMasa == null) // Eğer ID'ler eşleşmezse BadRequest döndürülür
+            if (updatedMasa == null) 
             {
                 return BadRequest("Masa ID'si uyuşmazlığı");
             }
@@ -73,22 +73,21 @@ namespace WebApi.Controllers.MasaController
             updatedMasa.Kapasite = masa.Kapasite;
             updatedMasa.Durum = masa.Durum;
 
-            await _masaRepository.UpdateAsync(updatedMasa); // Masa güncellenir
-            return NoContent(); // Güncelleme başarılıysa 204 döndürülür
+            await _masaRepository.UpdateAsync(updatedMasa); 
+            return NoContent(); 
         }
 
-        // Bir masayı silen API endpoint'i
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMasa(Guid id)
         {
             try
             {
-                await _masaRepository.DeleteAsync(id); // ID'ye göre masa silinir
-                return NoContent(); // Silme başarılıysa 204 döndürülür
+                await _masaRepository.DeleteAsync(id); 
+                return NoContent(); 
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message); // Eğer masa bulunmazsa 404 döndürülür
+                return NotFound(ex.Message); 
             }
         }
     }

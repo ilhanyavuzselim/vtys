@@ -11,9 +11,8 @@ namespace Domain.tedariksiparisi
         public decimal BirimFiyat { get; set; }
         public decimal Miktar { get; set; }
         public DateTime SiparisTarihi { get; set; }
-
-        public Tedarikci Tedarikci { get; set; }
-        public Malzeme Malzeme { get; set; }
+        public Tedarikci? Tedarikci { get; set; }
+        public Malzeme? Malzeme { get; set; }
     }
 
 }

@@ -10,7 +10,7 @@ namespace Domain.musteri
             Discriminator = KisiType.Müşteri.ToString();
         }
         public Guid MusteriId { get; set; }
-        public string Telefon { get; set; }  
+        public string? Telefon { get; set; }  
     }
 
 }

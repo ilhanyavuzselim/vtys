@@ -9,9 +9,8 @@ namespace Domain.odeme
         public Guid SiparisID { get; set; }
         public Guid OdemeTuruID { get; set; }
         public decimal Tutar { get; set; }
-
-        public Siparis Siparis { get; set; }
-        public OdemeTuru OdemeTuru { get; set; }
+        public Siparis? Siparis { get; set; }
+        public OdemeTuru? OdemeTuru { get; set; }
     }
 
 }

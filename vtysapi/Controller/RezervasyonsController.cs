@@ -15,7 +15,6 @@ namespace WebApi.Controllers.RezervasyonController
         private readonly IRepository<Masa> _masaRepository;
         private readonly IRepository<Musteri> _musteriRepository;
 
-        // Constructor Injection ile IRepository<Rezervasyon>, IRepository<Masa>, IRepository<Musteri> referansları alınır
         public RezervasyonController(
             IRepository<Rezervasyon> rezervasyonRepository,
             IRepository<Masa> masaRepository,
@@ -26,30 +25,27 @@ namespace WebApi.Controllers.RezervasyonController
             _musteriRepository = musteriRepository;
         }
 
-        // Tüm rezervasyonları getiren API endpoint'i
         [HttpGet]
         public async Task<IActionResult> GetAllRezervasyonlar()
         {
             var rezervasyonlar = await _rezervasyonRepository.GetAllAsync(r=>r.Masa, r=>r.Musteri);
-            return Ok(rezervasyonlar);  // Rezervasyonlar listesi döndürülür
+            return Ok(rezervasyonlar);  
         }
 
-        // ID ile rezervasyon getiren API endpoint'i
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRezervasyonById(Guid id)
         {
             try
             {
-                var rezervasyon = await _rezervasyonRepository.GetByIdAsync(id, r=>r.Masa , r=>r.Musteri); // ID'ye göre rezervasyon getirilir
-                return Ok(rezervasyon); // Rezervasyon bulunursa, OK döndürülür
+                var rezervasyon = await _rezervasyonRepository.GetByIdAsync(id, r=>r.Masa , r=>r.Musteri); 
+                return Ok(rezervasyon); 
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message); // Rezervasyon bulunamazsa, 404 NotFound döndürülür
+                return NotFound(ex.Message); 
             }
         }
 
-        // Yeni rezervasyon ekleyen API endpoint'i
         [HttpPost]
         public async Task<IActionResult> CreateRezervasyon([FromBody] CreateRezervasyonRequest rezervasyon)
         {
@@ -58,7 +54,6 @@ namespace WebApi.Controllers.RezervasyonController
                 return BadRequest("Rezervasyon verisi geçersiz");
             }
 
-            // Masa ve Müşteri kontrolü
             var masa = await _masaRepository.GetByIdAsync(rezervasyon.MasaID);
             var musteri = await _musteriRepository.GetByIdAsync(rezervasyon.MusteriID);
 
@@ -67,15 +62,19 @@ namespace WebApi.Controllers.RezervasyonController
                 return NotFound("Masa veya Müşteri bulunamadı");
             }
 
-            Rezervasyon r = new Rezervasyon(rezervasyon.MasaID, rezervasyon.MusteriID, rezervasyon.RezervasyonTarihi);
-            r.Musteri = await _musteriRepository.GetByIdAsync(rezervasyon.MusteriID);
-            r.Masa = await _masaRepository.GetByIdAsync(rezervasyon.MasaID);
+            Rezervasyon r = new Rezervasyon()
+            {
+                Masa = masa,
+                Musteri = musteri,
+                MasaID = rezervasyon.MasaID,
+                MusteriID = rezervasyon.MusteriID,
+                RezervasyonTarihi = rezervasyon.RezervasyonTarihi,
+            };
 
-            await _rezervasyonRepository.AddAsync(r); // Yeni rezervasyon eklenir
-            return CreatedAtAction(nameof(GetRezervasyonById), new { id = r.Id }, rezervasyon); // Ekleme başarılı ise 201 döndürülür
+            await _rezervasyonRepository.AddAsync(r); 
+            return CreatedAtAction(nameof(GetRezervasyonById), new { id = r.Id }, rezervasyon); 
         }
 
-        // Mevcut bir rezervasyonu güncelleyen API endpoint'i
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRezervasyon(Guid id, [FromBody] UpdateRezervasyonRequest rezervasyon)
         {
@@ -119,18 +118,17 @@ namespace WebApi.Controllers.RezervasyonController
         }
 
 
-        // Bir rezervasyonu silen API endpoint'i
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRezervasyon(Guid id)
         {
             try
             {
-                await _rezervasyonRepository.DeleteAsync(id); // ID'ye göre rezervasyon silinir
-                return NoContent(); // Silme başarılıysa 204 döndürülür
+                await _rezervasyonRepository.DeleteAsync(id);
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message); // Eğer rezervasyon bulunmazsa 404 döndürülür
+                return NotFound(ex.Message); 
             }
         }
     }

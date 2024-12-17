@@ -8,7 +8,7 @@ namespace Domain.stok
         public Guid MalzemeID { get; set; }
         public int Miktar { get; set; }
 
-        public Malzeme Malzeme { get; set; }
+        public Malzeme? Malzeme { get; set; }
     }
 
 }

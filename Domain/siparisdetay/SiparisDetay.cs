@@ -9,9 +9,8 @@ namespace Domain.siparisdetay
         public Guid SiparisID { get; set; }
         public Guid MenuID { get; set; }
         public int Adet { get; set; }
-
-        public Siparis Siparis { get; set; }
-        public Menu Menu { get; set; }
+        public Siparis? Siparis { get; set; }
+        public Menu? Menu { get; set; }
     }
 
 }

@@ -13,11 +13,10 @@ namespace Domain.siparis
         public Guid? MusteriID { get; set; }
         public Guid PersonelID { get; set; }
         public DateTime SiparisTarihi { get; set; } = DateTime.Now;
-
-        public Masa Masa { get; set; }
-        public Musteri Musteri { get; set; }
-        public Personel Personel { get; set; }
-        public ICollection<SiparisDetay> SiparisDetaylar { get; set; }
+        public Masa? Masa { get; set; }
+        public Musteri? Musteri { get; set; }
+        public Personel? Personel { get; set; }
+        public ICollection<SiparisDetay>? SiparisDetaylar { get; set; }
     }
 
 }

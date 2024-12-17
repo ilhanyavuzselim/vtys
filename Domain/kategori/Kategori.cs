@@ -6,8 +6,7 @@ namespace Domain.kategori
     {
         public Guid Id { get; set; }
         public string Ad { get; set; }
-
-        public ICollection<Menu> Menuler { get; set; }
+        public ICollection<Menu>? Menuler { get; set; }
     }
 
 }

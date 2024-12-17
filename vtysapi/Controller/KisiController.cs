@@ -44,7 +44,11 @@ namespace WebApi.Controllers.KisiController
             {
                 return BadRequest("Kişi verisi geçersiz");
             }
-            Kisi k = new Kisi(Ad: kisi.Ad, Soyad: kisi.Soyad);
+            Kisi k = new Kisi() 
+            {
+                Ad = kisi.Ad,
+                Soyad = kisi.Soyad,
+            };
             await _kisiRepository.AddAsync(k); 
             return CreatedAtAction(nameof(GetKisiById), new {id = k.Id} , kisi); 
         }
