@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Domain.masa;
 using Infrastructure.Repositories;
-using System.Diagnostics;
 using Common.Requests.Masa;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers.MasaController
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -3,7 +3,7 @@ using Infrastructure.Repositories;
 using Domain.kisi;
 using Common.Requests.kisi;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers.KisiController
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -52,11 +52,6 @@ namespace WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateKisi(Guid id, [FromBody] UpdateKisiRequest kisi)
         {
-            if (id != kisi.id)
-            {
-                return BadRequest("Kişi ID'si ile URL uyuşmazlığı");
-            }
-
             var updatedKisi = await _kisiRepository.GetByIdAsync(id);
             
             if (updatedKisi == null) 
@@ -64,8 +59,8 @@ namespace WebApi.Controllers
                 return BadRequest("Kişi ID'si uyuşmazlığı");
             }
             
-            updatedKisi.Ad = kisi.Ad;
-            updatedKisi.Soyad = kisi.Soyad;
+            updatedKisi.Ad = kisi.Ad == default ? updatedKisi.Ad : kisi.Ad;
+            updatedKisi.Soyad = kisi.Soyad == default ? updatedKisi.Soyad : kisi.Soyad;
 
             await _kisiRepository.UpdateAsync(updatedKisi);
             return NoContent();

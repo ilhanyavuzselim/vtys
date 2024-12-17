@@ -185,3 +185,75 @@ BEGIN
     RETURN NEW;
 END;
 
+CREATE OR REPLACE PROCEDURE create_musteri_via_existed_person(
+    p_kisi_id UUID,          -- Kisiler tablosundaki kişi ID'si
+    p_telefon Text       -- Musteriler tablosuna eklenecek telefon bilgisi
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- 1. Kisiler tablosunda mevcut kişi kaydını güncelle
+    UPDATE public."Kisiler"
+    SET "Discriminator" = 'Musteri'
+    WHERE "Id" = p_kisi_id;
+
+    -- 2. Musteriler tablosuna yeni musteri kaydını ekle
+    INSERT INTO public."Musteriler"(
+        "Id", "Ad", "Soyad", "Discriminator", "Telefon")
+    VALUES (
+        p_kisi_id,  -- Kişinin ID'sini müşteri ID'si olarak kullan
+        (SELECT "Ad" FROM public."Kisiler" WHERE "Id" = p_kisi_id LIMIT 1),
+        (SELECT "Soyad" FROM public."Kisiler" WHERE "Id" = p_kisi_id LIMIT 1),
+        'Müşteri',  -- Discriminator değeri
+        p_telefon   -- Telefon, parametre olarak alındı
+    );
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE insert_musteri(
+    p_ad VARCHAR,          -- Kisiler tablosuna eklenecek ad
+    p_soyad VARCHAR,       -- Kisiler tablosuna eklenecek soyad
+    p_telefon VARCHAR      -- Musteriler tablosuna eklenecek telefon
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    new_id UUID;  -- Yeni oluşturulan Id'yi saklamak için değişken
+BEGIN
+    -- Kisiler tablosuna yeni kişi kaydını ekle
+    INSERT INTO public."Kisiler"(
+        "Id", "Ad", "Soyad", "Discriminator"
+    )
+    VALUES (gen_random_uuid(), p_ad, p_soyad, 'Kişi')
+    RETURNING "Id" INTO new_id;  -- Yeni oluşturulan Id'yi 'new_id' değişkenine al
+
+    -- create_musteri_via_existed_kisi prosedürünü çağır
+    CALL create_musteri_via_existed_kisi(new_id, p_telefon);  -- Yeni Id ve telefon bilgisini gönder
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE update_musteri(
+    p_id UUID,         -- Güncellenecek kişinin ID'si
+    p_ad text,      -- Yeni ad
+    p_soyad text,   -- Yeni soyad
+    p_telefon text -- Yeni telefon
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Kisiler tablosunda ilgili kişiyi güncelle
+    UPDATE public."Kisiler"
+    SET 
+        "Ad" = p_ad,
+        "Soyad" = p_soyad
+    WHERE "Id" = p_id;
+
+    -- Musteriler tablosundaki telefon bilgisini güncelle
+    UPDATE public."Musteriler"
+    SET 
+        "Telefon" = p_telefon
+    WHERE "Id" = p_id;
+
+END;
+$$;
+
