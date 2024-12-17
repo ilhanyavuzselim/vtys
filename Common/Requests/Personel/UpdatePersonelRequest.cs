@@ -2,10 +2,11 @@
 
 namespace Common.Requests.Personel
 {
-    public class UpdatePersonelRequest : UpdateKisiRequest
+    public class UpdatePersonelRequest
     {
-        public Guid KisiId { get; set; }
-        public string Pozisyon { get; set; }
+        public string? Ad { get; set; }
+        public string? Soyad { get; set; }
+        public string? Pozisyon { get; set; }
 
     }
 }

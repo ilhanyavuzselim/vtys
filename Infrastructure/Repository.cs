@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
         }
 
         // GetByIdAsync ile ilişkili verileri yüklemek
-        public async Task<T> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includeProperties)
+        public async Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includeProperties)
         {
             IQueryable<T> query = _dbSet;
 
@@ -76,13 +76,8 @@ namespace Infrastructure.Repositories
 
         public async Task ExecuteStoredProcedureAsync(string storedProcedureName, Dictionary<string, object> parameters)
         {
-            // Generate SQL command
             var sqlCommand = GenerateSqlCommand(storedProcedureName, parameters);
-
-            // Create NpgsqlParameter objects to pass to the query
             var sqlParameters = parameters.Select(p => new NpgsqlParameter($"@{p.Key}", p.Value ?? DBNull.Value)).ToArray();
-
-            // Execute the query asynchronously with parameters
             await _context.Database.ExecuteSqlRawAsync(sqlCommand, sqlParameters);
         }
 
@@ -90,16 +85,12 @@ namespace Infrastructure.Repositories
         {
             var sqlCommand = GenerateSqlCommand(storedProcedureName, parameters);
             var sqlParameters = parameters.Select(p => new NpgsqlParameter($"@{p.Key}", p.Value ?? DBNull.Value)).ToArray();
-
             return await _context.Set<T>().FromSqlRaw(sqlCommand, sqlParameters).ToListAsync();
         }
 
         private string GenerateSqlCommand(string storedProcedureName, Dictionary<string, object> parameters)
         {
-            // Creating the parameter list for the SQL query (Named parameters: @p_kisi_id, @p_pozisyon, etc.)
             var parameterList = string.Join(", ", parameters.Keys.Select(k => $"@{k}"));
-
-            // Returning the stored procedure call with the generated parameter list
             return $"CALL {storedProcedureName}({parameterList})";
         }
 

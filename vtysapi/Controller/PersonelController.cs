@@ -4,7 +4,7 @@ using Domain.kisi;
 using Domain.personel;
 using Common.Requests.Personel;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers.PersonelController
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -48,9 +48,9 @@ namespace WebApi.Controllers
                 return BadRequest("Personel verisi geçersiz");
             }
 
-            if(personel.KisiId != Guid.Empty)
+            if(personel.KisiId.HasValue)
             {
-                var existedKisi = await _kisiRepository.GetByIdAsync(personel.KisiId);
+                var existedKisi = await _kisiRepository.GetByIdAsync(personel.KisiId.Value);
                 if(existedKisi == null)
                 {
                     return NotFound("Verilen Kişi ID'ye sahip kişi bulunamadı");
@@ -64,6 +64,10 @@ namespace WebApi.Controllers
             }
             else
             {
+                if(personel.Ad == null || personel.Soyad == null)
+                {
+                    return BadRequest("Personel verisi geçersiz");
+                }
                 Dictionary<string, object> d = new Dictionary<string, object>()
                 {
                     {"p_ad" , personel.Ad },
@@ -78,21 +82,25 @@ namespace WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePersonel(Guid id, [FromBody] UpdatePersonelRequest personel)
         {
-            if (id != personel.id || id != personel.KisiId || personel.KisiId != personel.id)
+            if (personel == null)
             {
-                return BadRequest("Personel ID'si ile URL uyuşmazlığı");
+                return BadRequest("Geçersiz personel verisi");
             }
-            var existedKisi = await _personelRepository.GetByIdAsync(personel.id);
-            if (existedKisi == null)
+            var existedPersonel = await _personelRepository.GetByIdAsync(id);
+            if (existedPersonel == null)
             {
                 return NotFound("Verilen Kişi ID'ye sahip kişi bulunamadı");
             }
+            if(personel.Ad != null) existedPersonel.Ad = personel.Ad;
+            if(personel.Soyad != null) existedPersonel.Soyad = personel.Soyad;
+            if(personel.Pozisyon != null) existedPersonel.Pozisyon= personel.Pozisyon;
+
             Dictionary<string, object> d = new Dictionary<string, object>()
             {
-                {"p_id", personel.id },
-                {"p_ad", personel.Ad },
-                {"p_soyad", personel.Soyad },
-                {"p_pozisyon", personel.Pozisyon }
+                {"p_id", id },
+                {"p_ad", existedPersonel.Ad },
+                {"p_soyad", existedPersonel.Soyad },
+                {"p_pozisyon", existedPersonel.Pozisyon }
             };
             await _personelRepository.ExecuteStoredProcedureAsync("update_personel", d);
 

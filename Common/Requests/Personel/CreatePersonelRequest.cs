@@ -2,10 +2,12 @@
 
 namespace Common.Requests.Personel
 {
-    public class CreatePersonelRequest : CreateKisiRequest
+    public class CreatePersonelRequest
     {
-        public Guid KisiId { get; set; }
-        public string Pozisyon { get; set; }
+        public string? Ad;
+        public string? Soyad;
+        public Guid? KisiId { get; set; }
+        public required string Pozisyon { get; set; }
 
     }
 }

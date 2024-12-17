@@ -2,7 +2,7 @@
 {
     public class CreateKisiRequest
     {
-        public string Ad { get; set; }
-        public string Soyad { get; set; }
+        public required string Ad { get; set; }
+        public required string Soyad { get; set; }
     }
 }

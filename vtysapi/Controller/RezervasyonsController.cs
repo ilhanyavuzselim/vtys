@@ -3,10 +3,9 @@ using Domain.masa;
 using Domain.musteri;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Common.Requests.Rezervasyon;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers.RezervasyonController
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -80,21 +79,6 @@ namespace WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRezervasyon(Guid id, [FromBody] UpdateRezervasyonRequest rezervasyon)
         {
-            if (id != rezervasyon.Id) // Eğer ID'ler eşleşmezse BadRequest döndürülür
-            {
-                return BadRequest("Rezervasyon ID'si uyuşmazlığı");
-            }
-
-            // Masa ve Müşteri kontrolü
-            var masa = await _masaRepository.GetByIdAsync(rezervasyon.MasaID);
-            var musteri = await _musteriRepository.GetByIdAsync(rezervasyon.MusteriID);
-
-            if (masa == null || musteri == null)
-            {
-                return NotFound("Masa veya Müşteri bulunamadı");
-            }
-
-            // Veritabanından mevcut rezervasyonu al
             var existingRezervasyon = await _rezervasyonRepository.GetByIdAsync(id);
 
             if (existingRezervasyon == null)
@@ -102,17 +86,36 @@ namespace WebApi.Controllers
                 return NotFound("Rezervasyon bulunamadı");
             }
 
-            // Rezervasyonu güncelleme işlemi
-            existingRezervasyon.Masa = masa;
-            existingRezervasyon.Musteri = musteri;
-            existingRezervasyon.MasaID = rezervasyon.MasaID;
-            existingRezervasyon.MusteriID = rezervasyon.MusteriID;
-            existingRezervasyon.RezervasyonTarihi = rezervasyon.RezervasyonTarihi;
+            if(rezervasyon.MasaID != null)
+            {
+                var masa = await _masaRepository.GetByIdAsync(rezervasyon.MasaID.Value);
+                if (masa == null)
+                {
+                    return NotFound("Masa bulunamadı");
+                }
+                existingRezervasyon.Masa = masa;
+                existingRezervasyon.MasaID = masa.Id;
+            }
 
-            // `DbContext`'te takip edilen nesneyi güncelle
+            if(rezervasyon.MusteriID != null)
+            {
+                var musteri = await _musteriRepository.GetByIdAsync(rezervasyon.MusteriID.Value);
+                if(musteri == null)
+                {
+                    return NotFound("Müşteri Bulunamadı");
+                }
+                existingRezervasyon.Musteri = musteri;
+                existingRezervasyon.MusteriID = musteri.Id;
+            }
+
+            if(rezervasyon.RezervasyonTarihi != null)
+            {
+                existingRezervasyon.RezervasyonTarihi = rezervasyon.RezervasyonTarihi.Value;
+            }
+
             await _rezervasyonRepository.UpdateAsync(existingRezervasyon);
 
-            return NoContent(); // Güncelleme başarılıysa 204 döndürülür
+            return NoContent();
         }
 
 
