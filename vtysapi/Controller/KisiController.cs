@@ -20,7 +20,7 @@ namespace WebApi.Controllers.KisiController
         public async Task<IActionResult> GetAllKisiler()
         {
             var kisiler = await _kisiRepository.GetAllAsync();
-            return Ok(kisiler);  
+            return Ok(kisiler.GroupBy(k => k.Id).Select(k => k.First()).ToList());  
         }
 
         [HttpGet("{id}")]

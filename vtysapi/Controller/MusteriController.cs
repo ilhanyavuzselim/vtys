@@ -111,7 +111,11 @@ namespace WebApi.Controllers.MusteriController
         {
             try
             {
-                await _musteriRepository.DeleteAsync(id);
+                Dictionary<string, object> d = new Dictionary<string, object>()
+                {
+                    {"p_id", id },
+                };
+                await _musteriRepository.ExecuteStoredProcedureAsync("remove_musteri", d);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
