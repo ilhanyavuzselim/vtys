@@ -112,7 +112,11 @@ namespace WebApi.Controllers.PersonelController
         {
             try
             {
-                await _personelRepository.DeleteAsync(id);
+                Dictionary<string, object> d = new Dictionary<string, object>()
+                {
+                    {"p_id", id }
+                };
+                await _personelRepository.ExecuteStoredProcedureAsync("remove_personel",d);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

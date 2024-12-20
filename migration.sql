@@ -257,3 +257,18 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE PROCEDURE remove_personel(p_id uuid)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    DELETE FROM public."Personeller" WHERE "PersonelId" = p_id;
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE remove_musteri(p_id uuid)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    DELETE FROM public."Musteriler" WHERE "MusteriId" = p_id;
+END;
+$$;

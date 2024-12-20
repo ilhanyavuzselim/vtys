@@ -1,4 +1,4 @@
-﻿using Common.Consts;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.kisi
 {
@@ -7,6 +7,7 @@ namespace Domain.kisi
         public Guid Id { get; set; }
         public string? Ad { get; set; }
         public string? Soyad { get; set; }
-        public string Discriminator { get; set; } = KisiType.Kişi.ToString();
+        [JsonIgnore]
+        public string? Discriminator { get; set; }
     }
 }
