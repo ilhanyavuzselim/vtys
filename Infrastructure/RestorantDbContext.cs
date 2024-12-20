@@ -1,6 +1,5 @@
 ﻿namespace Infrastructure
 {
-    using Common.Consts;
     using Domain.gider;
     using Domain.kategori;
     using Domain.kisi;
