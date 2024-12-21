@@ -45,7 +45,7 @@ namespace WebApi.Controllers.MalzemeController
         {
             if (malzeme == null)
             {
-                return BadRequest("Masa verisi geçersiz");
+                return BadRequest("Malzeme verisi geçersiz");
             }
 
             var tedarikci = await _tedarikciRepository.GetByIdAsync(malzeme.TedarikciID);
@@ -73,7 +73,7 @@ namespace WebApi.Controllers.MalzemeController
 
             if (updatedMalzeme == null)
             {
-                return BadRequest("Masa ID'si uyuşmazlığı");
+                return BadRequest("Malzeme ID'si uyuşmazlığı");
             }
             
             var newTedarikci = await _tedarikciRepository.GetByIdAsync(malzeme.TedarikciID);

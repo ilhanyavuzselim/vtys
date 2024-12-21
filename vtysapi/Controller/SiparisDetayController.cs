@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Repositories;
 using Domain.menu;
-using Common.Requests.Menu;
-using Domain.kategori;
 using Domain.siparisdetay;
 using Domain.siparis;
 using Common.Requests.SiparisDetay;
@@ -50,7 +48,7 @@ namespace WebApi.Controllers.MenuController
         {
             if (siparisDetay == null)
             {
-                return BadRequest("Masa verisi geçersiz");
+                return BadRequest("Sipariş Detay verisi geçersiz");
             }
             
             var existedMenu = await _menuRepository.GetByIdAsync(siparisDetay.MenuID);
@@ -87,7 +85,7 @@ namespace WebApi.Controllers.MenuController
 
             if (existedSiparisDetay == null) 
             {
-                return BadRequest("Menu ID'si uyuşmazlığı");
+                return BadRequest("Sipariş Detay ID'si uyuşmazlığı");
             }
 
             if (siparisDetay.MenuID.HasValue)

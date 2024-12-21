@@ -55,11 +55,17 @@ namespace WebApi.Controllers.RezervasyonController
             }
 
             var masa = await _masaRepository.GetByIdAsync(rezervasyon.MasaID);
-            var musteri = await _musteriRepository.GetByIdAsync(rezervasyon.MusteriID);
 
-            if (masa == null || musteri == null)
+            if (masa == null)
             {
-                return NotFound("Masa veya Müşteri bulunamadı");
+                return NotFound("Masa ID'si uyuşmazlığı");
+            }
+
+            var musteri = await _musteriRepository.GetByIdAsync(rezervasyon.MusteriID);
+            
+            if (musteri == null)
+            {
+                return NotFound("Müşteri ID'si uyuşmazlığı");
             }
 
             Rezervasyon r = new Rezervasyon()

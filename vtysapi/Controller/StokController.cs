@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Repositories;
-using Common.Requests.Tedarikci;
 using Domain.stok;
 using Common.Requests.Stok;
 using Domain.malzeme;
@@ -32,8 +31,8 @@ namespace WebApi.Controllers.StokController
         {
             try
             {
-                var tedarikci = await _stokRepository.GetByIdAsync(id, s=>s.Malzeme);
-                return Ok(tedarikci);
+                var stoklar = await _stokRepository.GetByIdAsync(id, s=>s.Malzeme);
+                return Ok(stoklar);
             }
             catch (KeyNotFoundException ex)
             {
@@ -73,14 +72,14 @@ namespace WebApi.Controllers.StokController
 
             if (existedStok == null)
             {
-                return BadRequest("Kategori ID'si uyuşmazlığı");
+                return BadRequest("Stok ID'si uyuşmazlığı");
             }
 
             var existedMalzeme = await _malzemeRepository.GetByIdAsync(stok.MalzemeID);
 
             if (existedMalzeme == null)
             {
-                return BadRequest("Kategori ID'si uyuşmazlığı");
+                return BadRequest("Malzeme ID'si uyuşmazlığı");
             }
 
             existedStok.Miktar = stok.Miktar;

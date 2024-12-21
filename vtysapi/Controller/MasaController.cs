@@ -44,6 +44,13 @@ namespace WebApi.Controllers.MasaController
             {
                 return BadRequest("Masa verisi geçersiz");
             }
+            var existedMasa = await _masaRepository.GetAllByPredicate(m => m.MasaNo == masa.MasaNo);
+
+            if(existedMasa != null)
+            {
+                return BadRequest("Verilen Masa No eşsiz olmalıdır");
+            }
+
             Masa m = new Masa()
             {
                 Kapasite = masa.Kapasite,

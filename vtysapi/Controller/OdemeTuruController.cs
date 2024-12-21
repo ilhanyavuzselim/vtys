@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Domain.masa;
 using Infrastructure.Repositories;
 using Domain.odemeturu;
 using Common.Requests.OdemeTuru;
@@ -43,7 +42,7 @@ namespace WebApi.Controllers.OdemeTuruController
         {
             if (odemeTuru == null)
             {
-                return BadRequest("Masa verisi geçersiz");
+                return BadRequest("Ödeme Türü verisi geçersiz");
             }
             OdemeTuru o = new OdemeTuru()
             {
@@ -60,7 +59,7 @@ namespace WebApi.Controllers.OdemeTuruController
             
             if (updatedOdemeTuru == null) 
             {
-                return BadRequest("Masa ID'si uyuşmazlığı");
+                return BadRequest("Ödeme Türü ID'si uyuşmazlığı");
             }
             
             updatedOdemeTuru.Ad = odemeTuru.Ad;

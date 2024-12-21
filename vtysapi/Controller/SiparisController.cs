@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Repositories;
-using Domain.menu;
-using Common.Requests.Menu;
 using Domain.siparis;
 using Domain.masa;
 using Domain.musteri;
 using Domain.personel;
 using Common.Requests.Siparis;
+using Domain.kisi;
 
 namespace WebApi.Controllers.MenuController
 {
@@ -16,15 +15,14 @@ namespace WebApi.Controllers.MenuController
     {
         private readonly IRepository<Siparis> _siparisRepository;
         private readonly IRepository<Masa> _masaRepository;
-        private readonly IRepository<Musteri> _musteriRepository;
-        private readonly IRepository<Personel> _personelRepository;
+        private readonly IRepository<Kisi> _kisiRepository;
 
-        public SiparisController(IRepository<Siparis> siparisRepository, IRepository<Masa> masaRepository, IRepository<Musteri> musteriRepository, IRepository<Personel> personelRepository)
+        public SiparisController(IRepository<Siparis> siparisRepository, IRepository<Masa> masaRepository,
+            IRepository<Kisi> kisiRepository)
         {
             _siparisRepository = siparisRepository;
             _masaRepository = masaRepository;
-            _musteriRepository = musteriRepository;
-            _personelRepository = personelRepository;
+            _kisiRepository = kisiRepository;
         }
 
         [HttpGet]
@@ -63,19 +61,19 @@ namespace WebApi.Controllers.MenuController
                 return BadRequest("Verilen Masa Bulunamadı");
             }
 
-            /*var musteri = await _musteriRepository.GetByIdAsync(siparis.MusteriID);
+            var musteri = await _kisiRepository.GetByIdAsync(siparis.MusteriID);
 
             if (musteri == null)
             {
                 return BadRequest("Verilen Müşteri Bulunamadı");
             }
 
-            var personel = await _personelRepository.GetByIdAsync(siparis.PersonelID);
-
+            var personel = await _kisiRepository.GetByIdAsync(siparis.PersonelID);
+            
             if (personel == null)
             {
                 return BadRequest("Verilen personel Peronsel Bulunamadı");
-            }*/
+            }
 
             Siparis s = new Siparis()
             {
@@ -110,27 +108,23 @@ namespace WebApi.Controllers.MenuController
                 existedSiparis.Masa = masa;
             }
 
-            /*
-             * if (siparis.MusteriID.HasValue)
+            if (siparis.MusteriID.HasValue)
             {
-                var musteri = await _musteriRepository.GetByIdAsync(siparis.MusteriID.Value);
+                var musteri = await _kisiRepository.GetByIdAsync(siparis.MusteriID.Value);
                 if (musteri == null)
                 {
                     return BadRequest("Müşteri ID'si uyuşmazlığı");
                 }
-                existedSiparis.Musteri = musteri;
             }
 
             if (siparis.PersonelID.HasValue)
             {
-                var personel = await _personelRepository.GetByIdAsync(siparis.PersonelID.Value);
+                var personel = await _kisiRepository.GetByIdAsync(siparis.PersonelID.Value);
                 if (personel == null)
                 {
                     return BadRequest("Personel ID'si uyuşmazlığı");
                 }
-                existedSiparis.Personel = personel;
             }
-            */
 
             existedSiparis.PersonelID = siparis.PersonelID == null ? existedSiparis.PersonelID : siparis.PersonelID.Value;
             existedSiparis.MasaID = siparis.MasaID == null ? existedSiparis.MasaID : siparis.MasaID.Value;

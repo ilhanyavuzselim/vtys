@@ -84,7 +84,7 @@ namespace WebApi.Controllers.MusteriController
         {
             if(musteri == null)
             {
-                return BadRequest("Verilen Parametreler Geçersiz");
+                return BadRequest("Müşteri verisi geçersiz");
             }
             var existedMusteri = await _musteriRepository.GetByIdAsync(id);
             if (existedMusteri == null)
