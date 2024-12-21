@@ -46,7 +46,7 @@ namespace WebApi.Controllers.MasaController
             }
             var existedMasa = await _masaRepository.GetAllByPredicate(m => m.MasaNo == masa.MasaNo);
 
-            if(existedMasa != null)
+            if(existedMasa.Any())
             {
                 return BadRequest("Verilen Masa No eşsiz olmalıdır");
             }

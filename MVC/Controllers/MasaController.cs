@@ -1,6 +1,13 @@
 ﻿using Common.Requests.Masa;
+using Common.Requests.Musteri;
+using Common.Requests.Siparis;
 using Domain.masa;
+using Domain.musteri;
+using Domain.personel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity;
 
 namespace MVC.Controllers
 {
@@ -14,13 +21,22 @@ namespace MVC.Controllers
         }
 
         // GET: MasaController
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(int page = 1)
         {
+            int pageSize = 16;
+            int totalMasalar = 0;
+            int totalPages = 0;
             var result = await _apiRequestHelper.GetAsync<IEnumerable<Masa>>(ApiEndpoints.MasaControllerGetUrl);
             if (result != null)
             {
+                totalMasalar = result.Count();
+                totalPages = (int)Math.Ceiling((double)totalMasalar / pageSize); 
                 result = result.OrderBy(r => r.MasaNo);
+                result = result.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             }
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
             return View(result);
         }
 
@@ -76,6 +92,43 @@ namespace MVC.Controllers
         public async Task DeleteAsync(Guid id)
         {
             await _apiRequestHelper.DeleteAsync(ApiEndpoints.MasaControllerDeleteUrl + id);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> _SiparisEkle(Guid id)
+        {
+            var masa = await _apiRequestHelper.GetAsync<Masa>(ApiEndpoints.MasaControllerGetByIdUrl + id);
+            var personeller = await _apiRequestHelper.GetAsync<List<Personel>>(ApiEndpoints.PersonelControllerGetUrl);
+            var musteriler = await _apiRequestHelper.GetAsync<List<Musteri>>(ApiEndpoints.MusteriControllerGetUrl);
+            ViewBag.Personeller = personeller;
+            ViewBag.Musteriler = musteriler;
+            return PartialView("_siparisEkle", masa); 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateSiparis(CreateSiparisRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                await _apiRequestHelper.PostAsync(request, ApiEndpoints.SiparisControllerCreateUrl);   
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult _MusteriEkle()
+        {
+            return PartialView("_musteriEkle");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateMusteri(CreateMusteriRequest musteri)
+        {
+            if (ModelState.IsValid)
+            {
+                await _apiRequestHelper.PostAsync(musteri, ApiEndpoints.MusteriControllerCreateUrl);
+            }
+            return RedirectToAction("Index");
         }
     }
 }

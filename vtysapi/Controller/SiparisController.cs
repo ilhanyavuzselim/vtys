@@ -75,16 +75,19 @@ namespace WebApi.Controllers.MenuController
                 return BadRequest("Verilen personel Peronsel Bulunamadı");
             }
 
+            masa.Durum = false;
+
             Siparis s = new Siparis()
             {
                 Masa = masa,
                 PersonelID = siparis.PersonelID,
                 MusteriID = siparis.MusteriID,
                 MasaID = siparis.MasaID,
-                SiparisTarihi = siparis.SiparisTarihi
+                SiparisTarihi = siparis.SiparisTarihi.ToUniversalTime()
             };
 
             await _siparisRepository.AddAsync(s); 
+            await _masaRepository.UpdateAsync(masa);
             return CreatedAtAction(nameof(GetSiparisById), new { id = s.Id }, siparis);
         }
 

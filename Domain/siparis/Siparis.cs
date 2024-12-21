@@ -1,6 +1,5 @@
 ﻿using Domain.masa;
 using Domain.musteri;
-using Domain.odeme;
 using Domain.personel;
 using Domain.siparisdetay;
 using System.Text.Json.Serialization;
