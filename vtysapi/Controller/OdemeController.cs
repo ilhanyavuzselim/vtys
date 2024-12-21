@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Domain.masa;
 using Infrastructure.Repositories;
 using Domain.odemeturu;
-using Common.Requests.OdemeTuru;
 using Domain.odeme;
 using Common.Requests.Odeme;
 using Domain.siparis;
@@ -50,19 +48,19 @@ namespace WebApi.Controllers.OdemeController
         {
             if (odeme == null)
             {
-                return BadRequest("Masa verisi geçersiz");
+                return BadRequest("Ödeme verisi geçersiz");
             }
 
-            var siparis = await _siparisRepository.GetByIdAsync(odeme.SiparisID);
+            var existedSiparis = await _siparisRepository.GetByIdAsync(odeme.SiparisID);
 
-            if(siparis == null)
+            if(existedSiparis == null)
             {
                 return BadRequest("Sipariş ID'si uyuşmazlığı");
             }
 
-            var odemeTuru = await _odemeTuruRepository.GetByIdAsync(odeme.OdemeTuruID);
+            var exitedOdemeTuru = await _odemeTuruRepository.GetByIdAsync(odeme.OdemeTuruID);
 
-            if(odemeTuru == null)
+            if(exitedOdemeTuru == null)
             {
                 return BadRequest("Odeme türü ID'si uyuşmazlığı");
             }
@@ -85,7 +83,7 @@ namespace WebApi.Controllers.OdemeController
             
             if (updatedOdeme == null) 
             {
-                return BadRequest("Masa ID'si uyuşmazlığı");
+                return BadRequest("Odeme ID'si uyuşmazlığı");
             }
 
             var siparis = await _siparisRepository.GetByIdAsync(odeme.SiparisID);

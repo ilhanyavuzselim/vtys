@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Repositories;
-using Domain.odeme;
-using Common.Requests.Odeme;
 using Domain.tedarikci;
 using Domain.malzeme;
 using Domain.tedariksiparisi;

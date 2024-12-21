@@ -29,6 +29,20 @@ namespace Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> GetAllByPredicate(Expression<Func<T, bool>>? predicate)
+        {
+            IQueryable<T> query = _dbSet;
+
+            // Apply the predicate if it's provided
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.ToListAsync();
+        }
+
+
         // GetByIdAsync ile ilişkili verileri yüklemek
         public async Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includeProperties)
         {
@@ -92,6 +106,14 @@ namespace Infrastructure.Repositories
         {
             var parameterList = string.Join(", ", parameters.Keys.Select(k => $"@{k}"));
             return $"CALL {storedProcedureName}({parameterList})";
+        }
+
+        public void CloseConnection()
+        {
+            if (_context.Database.GetDbConnection().State == System.Data.ConnectionState.Open)
+            {
+                _context.Database.GetDbConnection().Close();
+            }
         }
 
 

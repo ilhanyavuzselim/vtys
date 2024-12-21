@@ -47,8 +47,8 @@ namespace WebApi.Controllers.MenuController
             {
                 return BadRequest("Masa verisi geçersiz");
             }
-            var k = await _kategoriRepository.GetByIdAsync(menu.KategoriID);
-            if(k == null)
+            var existedKategori = await _kategoriRepository.GetByIdAsync(menu.KategoriID);
+            if(existedKategori == null)
             {
                 return BadRequest("Verilen Kategori Bulunamadı");
             }
@@ -58,7 +58,7 @@ namespace WebApi.Controllers.MenuController
                 Ad = menu.Ad,
                 Fiyat = menu.Fiyat,
                 KategoriID = menu.KategoriID,
-                Kategori = k
+                Kategori = existedKategori
             };
 
             await _menuRepository.AddAsync(m); 
@@ -68,27 +68,27 @@ namespace WebApi.Controllers.MenuController
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMenu(Guid id, [FromBody] UpdateMenuRequest menu)
         {
-            var existedMasa = await _menuRepository.GetByIdAsync(id);
+            var existedMenu = await _menuRepository.GetByIdAsync(id);
 
-            if (existedMasa == null) 
+            if (existedMenu == null) 
             {
                 return BadRequest("Menu ID'si uyuşmazlığı");
             }
 
             if (menu.KategoriID.HasValue)
             {
-                var k = await _kategoriRepository.GetByIdAsync(menu.KategoriID.Value);
-                if(k == null)
+                var kategori = await _kategoriRepository.GetByIdAsync(menu.KategoriID.Value);
+                if(kategori == null)
                 {
                     return BadRequest("Kategori ID'si uyuşmazlığı");
                 }
-                existedMasa.Kategori = k;
+                existedMenu.Kategori = kategori;
             }
 
-            existedMasa.Ad = menu.Ad == null ? existedMasa.Ad : menu.Ad;
-            existedMasa.Fiyat = menu.Fiyat.HasValue ? menu.Fiyat.Value : existedMasa.Fiyat;
+            existedMenu.Ad = menu.Ad == null ? existedMenu.Ad : menu.Ad;
+            existedMenu.Fiyat = menu.Fiyat.HasValue ? menu.Fiyat.Value : existedMenu.Fiyat;
 
-            await _menuRepository.UpdateAsync(existedMasa); 
+            await _menuRepository.UpdateAsync(existedMenu); 
             return NoContent();
         }
 

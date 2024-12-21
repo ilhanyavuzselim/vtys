@@ -42,7 +42,7 @@ namespace WebApi.Controllers.MenuController
         {
             if (kategori == null)
             {
-                return BadRequest("Masa verisi geçersiz");
+                return BadRequest("Kategori verisi geçersiz");
             }
             Kategori k = new Kategori()
             {

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Repositories;
-using Domain.kategori;
-using Common.Requests.Kategori;
 using Domain.tedarikci;
 using Common.Requests.Tedarikci;
 
