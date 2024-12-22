@@ -6,6 +6,9 @@ using Domain.musteri;
 using Domain.personel;
 using Common.Requests.Siparis;
 using Domain.kisi;
+using Domain.siparisdetay;
+using System.Linq.Expressions;
+using Domain.menu;
 
 namespace WebApi.Controllers.MenuController
 {
@@ -16,13 +19,17 @@ namespace WebApi.Controllers.MenuController
         private readonly IRepository<Siparis> _siparisRepository;
         private readonly IRepository<Masa> _masaRepository;
         private readonly IRepository<Kisi> _kisiRepository;
+        private readonly IRepository<Menu> _menuRepository;
+        private readonly IRepository<SiparisDetay> _siparisDetayRepository;
 
         public SiparisController(IRepository<Siparis> siparisRepository, IRepository<Masa> masaRepository,
-            IRepository<Kisi> kisiRepository)
+            IRepository<Kisi> kisiRepository, IRepository<Menu> menuRepository, IRepository<SiparisDetay> siparisDetayRepository)
         {
             _siparisRepository = siparisRepository;
             _masaRepository = masaRepository;
             _kisiRepository = kisiRepository;
+            _menuRepository = menuRepository;
+            _siparisDetayRepository = siparisDetayRepository;
         }
 
         [HttpGet]
@@ -30,6 +37,24 @@ namespace WebApi.Controllers.MenuController
         {
             var siparisler = await _siparisRepository.GetAllAsync(s => s.Masa , si => si.SiparisDetaylar);
             return Ok(siparisler);  
+        }
+
+        [HttpGet("GetSiparisByMasaId/{id}")]
+        public async Task<IActionResult> GetSiparisByMasaId(Guid id)
+        {
+            var siparis = await _siparisRepository.GetAllByPredicatesAndIncludes([s => s.OdendiMi == false, s=>s.MasaID == id, s=>s.SiparisDetaylar.Any(sd=>sd.OdendiMi == false)], [s => s.SiparisDetaylar.Where(sd=>sd.OdendiMi == false)]);
+            var menuler = await _menuRepository.GetAllAsync();
+            
+            foreach(var siparisDetay in siparis.First().SiparisDetaylar)
+            {
+                siparisDetay.Menu = menuler.FirstOrDefault(m => m.Id == siparisDetay.MenuID);    
+            }
+
+            if (!siparis.Any())
+            {
+                return NotFound("Ödenmemiş Sipariş Bulunamadı");
+            }
+            return Ok(siparis.First());
         }
 
         [HttpGet("{id}")]
@@ -79,12 +104,28 @@ namespace WebApi.Controllers.MenuController
 
             Siparis s = new Siparis()
             {
+                Id = Guid.NewGuid(),
                 Masa = masa,
                 PersonelID = siparis.PersonelID,
                 MusteriID = siparis.MusteriID,
                 MasaID = siparis.MasaID,
-                SiparisTarihi = siparis.SiparisTarihi.ToUniversalTime()
+                SiparisTarihi = siparis.SiparisTarihi.ToUniversalTime(),
+                SiparisDetaylar = new List<SiparisDetay>()
             };
+
+            if (siparis.SiparisDetaylar.Any())
+            {
+                foreach (var createSiparisDetayRequest in siparis.SiparisDetaylar) 
+                {
+                    var siparisDetay = new SiparisDetay()
+                    {
+                        Adet = createSiparisDetayRequest.Adet,
+                        MenuID = createSiparisDetayRequest.MenuID,
+                        SiparisID = createSiparisDetayRequest.SiparisID
+                    };
+                    s.SiparisDetaylar.Add(siparisDetay);
+                }
+            }
 
             await _siparisRepository.AddAsync(s); 
             await _masaRepository.UpdateAsync(masa);
@@ -150,6 +191,27 @@ namespace WebApi.Controllers.MenuController
             {
                 return NotFound(ex.Message); 
             }
+        }
+
+        [HttpPost("CompleteSiparisDetayListByIdList")]
+        public async Task<IActionResult> CompleteSiparisDetayListByIdList([FromBody] List<Guid> siparisDetayIdList)
+        {
+            var siparisDetayları = await _siparisDetayRepository.GetAllByPredicate(sd => sd.OdendiMi == false);
+            var siparisId = siparisDetayları.FirstOrDefault(sd => sd.Id == siparisDetayIdList.First()).SiparisID;
+            foreach(var id in siparisDetayIdList)
+            {
+                var completedSiparisDetayi = siparisDetayları.FirstOrDefault(sd => sd.Id == id);
+                completedSiparisDetayi.OdendiMi = true;
+                await _siparisDetayRepository.UpdateAsync(completedSiparisDetayi);
+            }
+            var siparis = await _siparisRepository.GetByIdAsync(siparisId,s => s.SiparisDetaylar, siparis=>siparis.Masa);
+            if(!siparis.SiparisDetaylar.Any(sd => sd.OdendiMi == false))
+            {
+                siparis.OdendiMi = true;
+                siparis.Masa.Durum = true;
+                await _siparisRepository.UpdateAsync(siparis);
+            }
+            return NoContent();
         }
     }
 }

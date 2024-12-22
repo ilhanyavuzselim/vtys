@@ -2,12 +2,11 @@
 using Common.Requests.Musteri;
 using Common.Requests.Siparis;
 using Domain.masa;
+using Domain.menu;
 using Domain.musteri;
 using Domain.personel;
+using Domain.siparis;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity;
 
 namespace MVC.Controllers
 {
@@ -100,8 +99,10 @@ namespace MVC.Controllers
             var masa = await _apiRequestHelper.GetAsync<Masa>(ApiEndpoints.MasaControllerGetByIdUrl + id);
             var personeller = await _apiRequestHelper.GetAsync<List<Personel>>(ApiEndpoints.PersonelControllerGetUrl);
             var musteriler = await _apiRequestHelper.GetAsync<List<Musteri>>(ApiEndpoints.MusteriControllerGetUrl);
+            var menuler = await _apiRequestHelper.GetAsync<List<Menu>>(ApiEndpoints.MenuControllerGetUrl);
             ViewBag.Personeller = personeller;
             ViewBag.Musteriler = musteriler;
+            ViewBag.Menuler = menuler;
             return PartialView("_siparisEkle", masa); 
         }
 
@@ -128,6 +129,20 @@ namespace MVC.Controllers
             {
                 await _apiRequestHelper.PostAsync(musteri, ApiEndpoints.MusteriControllerCreateUrl);
             }
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> _OdemeYap(Guid id)
+        {
+            var siparis = await _apiRequestHelper.GetAsync<Siparis>(ApiEndpoints.SiparisControllerGetSiparisByMasaIdUrl + id);
+            return PartialView("_OdemeYap", siparis.SiparisDetaylar);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> OdemeYap(List<Guid> SelectedSiparisDetaylarIdList)
+        {
+            var k = await _apiRequestHelper.PostAsync(SelectedSiparisDetaylarIdList, ApiEndpoints.SiparisControllerCompleteSiparisDetayListByIdListUrl);
             return RedirectToAction("Index");
         }
     }

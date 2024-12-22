@@ -38,6 +38,33 @@
                         </select>
                     </div>
 
+                    <!-- Sipariş Detayları -->
+                    <h5>Sipariş Detayları</h5>
+                    <div id="siparisDetayContainer">
+                        <!-- İlk Sipariş Detay Alanı -->
+                        <div class="row mb-3 siparis-detay">
+                            <div class="col-md-6">
+                                <label for="MenuID" class="form-label">Menu</label>
+                                <select class="form-control" name="SiparisDetaylar[0].MenuID" required>
+                                    <option value="">Menü Seçiniz</option>
+                                    @foreach (var menu in ViewBag.Menuler)
+                                    {
+                                        <option value="@menu.Id">@menu.Ad - @menu.Fiyat ₺</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="Adet_1" class="form-label">Adet</label>
+                                <input type="number" class="form-control" name="SiparisDetaylar[0].Adet" min="1" required />
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" onclick="removeSiparisDetay(this)" class="btn btn-danger remove-detay">Sil</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addSiparisDetay()" class="btn btn-secondary mb-3" id="addDetay">Sipariş Detay Ekle</button>
+                    <br />
+
                     <!-- Sipariş Ekle Butonu -->
                     <button type="submit" class="btn btn-primary">Siparişi Ekle</button>
                 </form>

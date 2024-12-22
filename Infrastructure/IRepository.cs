@@ -6,6 +6,7 @@ namespace Infrastructure.Repositories
     {
         Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties);
         Task<IEnumerable<T>> GetAllByPredicate(Expression<Func<T, bool>>? predicate = null);
+        Task<IEnumerable<T>> GetAllByPredicatesAndIncludes(Expression<Func<T, bool>>[] predicates = null, Expression<Func<T, object>>[] includes = null);
         Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includeProperties);
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
