@@ -55,7 +55,6 @@ namespace WebApi.Controllers.MasaController
             {
                 Kapasite = masa.Kapasite,
                 MasaNo = masa.MasaNo,
-                Durum = masa.Durum
             };
             await _masaRepository.AddAsync(m); 
             return CreatedAtAction(nameof(GetMasaById), new { id = m.Id } , masa); 
