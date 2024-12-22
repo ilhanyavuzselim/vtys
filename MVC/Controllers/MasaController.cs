@@ -4,6 +4,7 @@ using Common.Requests.Siparis;
 using Domain.masa;
 using Domain.menu;
 using Domain.musteri;
+using Domain.odemeturu;
 using Domain.personel;
 using Domain.siparis;
 using Microsoft.AspNetCore.Mvc;
@@ -136,13 +137,15 @@ namespace MVC.Controllers
         public async Task<IActionResult> _OdemeYap(Guid id)
         {
             var siparis = await _apiRequestHelper.GetAsync<Siparis>(ApiEndpoints.SiparisControllerGetSiparisByMasaIdUrl + id);
+            var odemeTipleri = await _apiRequestHelper.GetAsync<List<OdemeTuru>>(ApiEndpoints.OdemeTuruControllerGetUrl);
+            ViewBag.OdemeTipleri = odemeTipleri;
             return PartialView("_OdemeYap", siparis.SiparisDetaylar);
         }
 
         [HttpPost]
-        public async Task<IActionResult> OdemeYap(List<Guid> SelectedSiparisDetaylarIdList)
+        public async Task<IActionResult> OdemeYap(List<Guid> SelectedSiparisDetaylarIdList, Guid OdemeTipiId)
         {
-            var k = await _apiRequestHelper.PostAsync(SelectedSiparisDetaylarIdList, ApiEndpoints.SiparisControllerCompleteSiparisDetayListByIdListUrl);
+            var k = await _apiRequestHelper.PostAsync(SelectedSiparisDetaylarIdList, ApiEndpoints.SiparisControllerCompleteSiparisDetayListByIdListUrl + OdemeTipiId);
             return RedirectToAction("Index");
         }
     }

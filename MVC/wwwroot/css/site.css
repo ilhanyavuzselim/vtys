@@ -20,3 +20,24 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Linklerin üzerine gelindiðinde renk deðiþimi */
+.text-light:hover {
+    color: #f39c12; /* Hover rengini sarý yapar */
+}
+
+/* Bootstrap dark tema renklerini tam olarak yansýtmak için */
+body {
+    background-color: #343a40; /* Bootstrap'in koyu modunun arka plan rengi */
+    color: #ffffff; /* Yazý rengini beyaz yap */
+}
+
+/* Sayfa linklerinin renklerini uyumlu hale getirmek */
+a.text-light {
+    color: #ffffff; /* Link rengini beyaz yap */
+}
+
+    /* Link üzerine gelindiðinde renk deðiþimi (Bootstrap'in koyu moduna uygun) */
+    a.text-light:hover {
+        color: #f8f9fa; /* Link hover rengini açýk ton yap */
+    }

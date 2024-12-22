@@ -2,8 +2,14 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <a href="@ViewBag.url" target="_blank">@ViewBag.url</a>
+<!-- Tüm sayfa için bg-dark sınıfını ve metin rengini text-light olarak ayarlıyoruz -->
+<div class="text-light min-vh-100 d-flex flex-column align-items-center justify-content-center">
+    <h1 class="display-4">VTYS Proje Ödevi</h1>
+    <h2 class="display-4">Restaurant Yönetim Sistemi</h2>
+    <br />
+    <span class="display-12">Hazırlayanlar: Metehan Öztürk, Yavuz Selim İlhan</span>
+    <span class="display-12">Öğrenci Numaraları: B231210061, B231210382</span>
+    <br />
+    <span class="display-12">Api Url -> </span>
+    <a href="@ViewBag.url" target="_blank" class="text-light">@ViewBag.url</a>
 </div>

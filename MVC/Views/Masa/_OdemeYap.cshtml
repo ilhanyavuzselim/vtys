@@ -37,6 +37,16 @@
                                 }
                             </tbody>
                         </table>
+                        <div class="form-group">
+                            <label for="OdemeTipi">Ödeme Tipi</label>
+                            <select name="OdemeTipiId" id="OdemeTipi" required class="form-control">
+                                <option value="">Ödeme Tipi Seçiniz</option>
+                                @foreach (var odemeTipi in ViewBag.OdemeTipleri)
+                                {
+                                    <option value="@odemeTipi.Id">@odemeTipi.Ad</option>
+                                }
+                            </select>
+                        </div>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span id="totalAmount" class="fw-bold">Toplam: 0,00 TL</span>

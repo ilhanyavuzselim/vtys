@@ -2,15 +2,13 @@
 using Infrastructure.Repositories;
 using Domain.siparis;
 using Domain.masa;
-using Domain.musteri;
-using Domain.personel;
 using Common.Requests.Siparis;
 using Domain.kisi;
 using Domain.siparisdetay;
-using System.Linq.Expressions;
 using Domain.menu;
+using Domain.odeme;
 
-namespace WebApi.Controllers.MenuController
+namespace WebApi.Controllers.SiparisController
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -21,15 +19,17 @@ namespace WebApi.Controllers.MenuController
         private readonly IRepository<Kisi> _kisiRepository;
         private readonly IRepository<Menu> _menuRepository;
         private readonly IRepository<SiparisDetay> _siparisDetayRepository;
+        private readonly IRepository<Odeme> _odemeRepository;
 
         public SiparisController(IRepository<Siparis> siparisRepository, IRepository<Masa> masaRepository,
-            IRepository<Kisi> kisiRepository, IRepository<Menu> menuRepository, IRepository<SiparisDetay> siparisDetayRepository)
+            IRepository<Kisi> kisiRepository, IRepository<Menu> menuRepository, IRepository<SiparisDetay> siparisDetayRepository, IRepository<Odeme> odemeRepository)
         {
             _siparisRepository = siparisRepository;
             _masaRepository = masaRepository;
             _kisiRepository = kisiRepository;
             _menuRepository = menuRepository;
             _siparisDetayRepository = siparisDetayRepository;
+            _odemeRepository = odemeRepository;
         }
 
         [HttpGet]
@@ -193,18 +193,29 @@ namespace WebApi.Controllers.MenuController
             }
         }
 
-        [HttpPost("CompleteSiparisDetayListByIdList")]
-        public async Task<IActionResult> CompleteSiparisDetayListByIdList([FromBody] List<Guid> siparisDetayIdList)
+        [HttpPost("CompleteSiparisDetayListByIdList/{odemeTipiId}")]
+        public async Task<IActionResult> CompleteSiparisDetayListByIdList([FromBody] List<Guid> siparisDetayIdList, Guid odemeTipiId)
         {
             var siparisDetayları = await _siparisDetayRepository.GetAllByPredicate(sd => sd.OdendiMi == false);
             var siparisId = siparisDetayları.FirstOrDefault(sd => sd.Id == siparisDetayIdList.First()).SiparisID;
+            decimal tutar = 0;
             foreach(var id in siparisDetayIdList)
             {
                 var completedSiparisDetayi = siparisDetayları.FirstOrDefault(sd => sd.Id == id);
+                var menu = await _menuRepository.GetByIdAsync(completedSiparisDetayi.MenuID);
                 completedSiparisDetayi.OdendiMi = true;
+                tutar += completedSiparisDetayi.Adet * menu.Fiyat;
                 await _siparisDetayRepository.UpdateAsync(completedSiparisDetayi);
             }
             var siparis = await _siparisRepository.GetByIdAsync(siparisId,s => s.SiparisDetaylar, siparis=>siparis.Masa);
+            Odeme odeme = new Odeme()
+            {
+                OdemeTuruID = odemeTipiId,
+                Siparis = siparis,
+                SiparisID = siparis.Id,
+                Tutar = tutar,
+            };
+            await _odemeRepository.AddAsync(odeme);
             if(!siparis.SiparisDetaylar.Any(sd => sd.OdendiMi == false))
             {
                 siparis.OdendiMi = true;

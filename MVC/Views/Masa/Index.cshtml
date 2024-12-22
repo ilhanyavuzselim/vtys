@@ -4,10 +4,12 @@
     ViewData["Title"] = "View";
 }
 
+<script src="~/js/siparis.js"></script>
+<link rel="stylesheet" href="~/css/masaIndex.css" />
 <h1 class="text-center mb-4">Masa Durumları</h1>
 
 <p>
-    <a class="btn btn-primary" asp-action="_Create">Yeni Masa Ekle</a>
+    <a class="btn btn-info btn-sm" asp-action="_Create">Yeni Masa Ekle</a>
 </p>
 
 <div class="row g-4">
@@ -60,173 +62,27 @@
 <div id="siparisModalContainer"></div>
 <div id="musteriEkleModalContainer"></div>
 <div id="odemeYapModalContainer"></div>
- 
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-
-        const siparisEkleButtons = document.querySelectorAll(".siparis-ekle");
-        siparisEkleButtons.forEach(button => {
-            button.addEventListener("click", function() {
-                const masaId = this.getAttribute("data-id");
-
-                // Fetch API ile controller'a istek gönder
-                fetch(`/Masa/_SiparisEkle/${masaId}`)
-                    .then(response => response.text())
-                    .then(data => {
-                        // Partial view'i modala yerleştir
-                        document.getElementById("siparisModalContainer").innerHTML = data;
-                        // Modalı göster
-                        const siparisModal = new bootstrap.Modal(document.getElementById("siparisModal"));
-                        siparisModal.show();
-                    })
-                    .catch(error => {
-                        alert("Bir hata oluştu!");
-                    });
+    const odemeYapButtons = document.querySelectorAll(".odeme-yap");
+    odemeYapButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const masaId = this.getAttribute("data-id");
+    
+            // Fetch API ile controller'a istek gönder
+            fetch(`/Masa/_OdemeYap/${masaId}`)
+                .then(response => response.text())
+                .then(data => {
+                    // Partial view'i modala yerleştir
+                    document.getElementById("odemeYapModalContainer").innerHTML = data;
+                    // Modalı göster
+                    const odemeModal = new bootstrap.Modal(document.getElementById("odemeYapModal"));
+                    odemeModal.show();
+                    addEventListenersToModal();
+                })
+                .catch(error => {
+                    alert("Bir hata oluştu!");
                 });
-            });
         });
-
-        const odemeYapButtons = document.querySelectorAll(".odeme-yap");
-        odemeYapButtons.forEach(button => {
-            button.addEventListener("click", function() {
-                const masaId = this.getAttribute("data-id");
-                    
-                // Fetch API ile controller'a istek gönder
-                fetch(`/Masa/_OdemeYap/${masaId}`)
-                    .then(response => response.text())
-                    .then(data => {
-                        // Partial view'i modala yerleştir
-                        document.getElementById("odemeYapModalContainer").innerHTML = data;
-                        // Modalı göster
-                        const odemeModal = new bootstrap.Modal(document.getElementById("odemeYapModal"));
-                        odemeModal.show();
-                        addEventListenersToModal();
-                    })
-                    .catch(error => {
-                        alert("Bir hata oluştu!");
-                    });
-            });
-        });
-
-        function addEventListenersToModal() {
-            document.querySelectorAll('input[name^="SelectedSiparisDetaylar"]').forEach(checkbox => {
-                checkbox.addEventListener('change', updateTotalAmount);
-            });
-
-            document.getElementById('selectAll')?.addEventListener('change', function () {
-                const checkboxes = document.querySelectorAll('input[name^="SelectedSiparisDetaylar"]');
-                checkboxes.forEach(checkbox => checkbox.checked = this.checked);
-                updateTotalAmount();
-            });
-        }
-
-        function updateTotalAmount() {
-            const checkboxes = document.querySelectorAll('input[name^="SelectedSiparisDetaylar"]:checked');
-            let total = 0;
-            checkboxes.forEach(checkbox => {
-                const row = checkbox.closest('tr');
-                const totalCell = row.querySelector('td:last-child').innerText.replace('TL', '').trim().replace(',', '.');
-                total += parseFloat(totalCell);
-            });
-            document.getElementById('totalAmount').innerText = `Toplam: ${total.toFixed(2).replace('.', ',')} TL`;
-        }
-
-
-
-    function renderCreateMusteriModal(){
-        fetch(`/Masa/_MusteriEkle/`)
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById("musteriEkleModalContainer").innerHTML = data;
-                const musteriModal = new bootstrap.Modal(document.getElementById("createMusteriModal"));
-                musteriModal.show();
-            })
-            .catch(error => {
-                alert("Bir hata oluştu!");
-            });
-    }
-    function addSiparisDetay() {
-        const firstDetail = document.querySelector('.siparis-detay');
-        const clonedDetail = firstDetail.cloneNode(true);
-
-        const inputs = clonedDetail.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            if (input.tagName === 'SELECT') {
-                input.selectedIndex = 0; 
-            } else if (input.tagName === 'INPUT') {
-                input.value = ''; 
-            }
-        });
-
-        const detaylar = document.querySelectorAll('.siparis-detay').length;
-        clonedDetail.querySelectorAll('select, input').forEach(input => {
-            const name = input.getAttribute('name');
-            if (name) {
-                input.setAttribute('name', name.replace(/\[\d+\]/, `[${detaylar}]`));
-            }
-        });
-
-        document.getElementById('siparisDetayContainer').appendChild(clonedDetail);
-    }
-
-    function removeSiparisDetay(button) {
-        const detaylar = document.querySelectorAll('.siparis-detay');
-        if (detaylar.length > 1) {
-            button.closest('.siparis-detay').remove();
-        } else {
-            alert('En az bir sipariş detay kalmalıdır.');
-        }
-    }
-
+    });
 </script>
-
-<style>
-    /* Soft ve Gradyan Kırmızı */
-    .kirmizi {
-        background: linear-gradient(135deg, #ff7f7f, #f44336); /* Soft kırmızı ve gradyan */
-        color: white;
-        border-left: 5px solid #d32f2f;
-        transition: all 0.3s ease;
-    }
-
-    /* Soft ve Gradyan Yeşil */
-    .yesil {
-        background: linear-gradient(135deg, #81c784, #4caf50); /* Soft yeşil ve gradyan */
-        color: white;
-        border-left: 5px solid #388e3c;
-        transition: all 0.3s ease;
-    }
-
-    /* Kart Hover Etkisi */
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Pagination Stili */
-    .pagination .btn {
-        margin: 0 5px;
-    }
-
-    /* Sayfa Başlığı */
-    h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        color: #333;
-    }
-
-    /* Action Buttonları */
-    .btn-sm {
-        margin-right: 5px;
-    }
-
-    /* Kart Başlık ve Text Stili */
-    .card-title {
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-
-    .card-text {
-        font-size: 1rem;
-    }
-</style>
