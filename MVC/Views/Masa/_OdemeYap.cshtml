@@ -1,0 +1,49 @@
+﻿@model List<Domain.siparisdetay.SiparisDetay>
+
+<div class="modal fade" id="odemeYapModal" tabindex="-1" role="dialog" aria-labelledby="odemeYapModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="odemeYapModalLabel">Ödeme Yap</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="odemeForm" asp-controller="Masa" asp-action="OdemeYap" method="post">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll" /></th>
+                                    <th>Ürün</th>
+                                    <th>Adet</th>
+                                    <th>Birim Fiyat</th>
+                                    <th>Toplam</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="SelectedSiparisDetaylarIdList" value="@Model[i].Id" />
+                                        </td>
+                                        <td>@Model[i].Menu.Ad</td>
+                                        <td>@Model[i].Adet</td>
+                                        <td>@Model[i].Menu.Fiyat ₺</td>
+                                        <td>@(Model[i].Adet * Model[i].Menu.Fiyat) ₺</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span id="totalAmount" class="fw-bold">Toplam: 0,00 TL</span>
+                        <button type="submit" class="btn btn-primary">Ödeme Yap</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

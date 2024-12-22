@@ -4,67 +4,229 @@
     ViewData["Title"] = "View";
 }
 
-<h1>View</h1>
+<h1 class="text-center mb-4">Masa Durumları</h1>
 
 <p>
-    <a asp-action="_Create">Create New</a>
+    <a class="btn btn-primary" asp-action="_Create">Yeni Masa Ekle</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MasaNo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Kapasite)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Durum)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MasaNo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Kapasite)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Durum)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "_Edit", new {  id=item.Id  }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "_Delete", new { id = item.Id }) |
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
 
-@section Scripts {
-    <script>
+<div class="row g-4">
+    @foreach (var item in Model)
+    {
+        var masaClass = item.Durum ? "yesil" : "kirmizi";  // Durumuna göre renk sınıfı belirle
+        <div class="col-md-3">
+            <div class="card @masaClass shadow-sm rounded">
+                <div class="card-body">
+                    <h5 class="card-title">Masa No: @item.MasaNo</h5>
+                    <p class="card-text">Kapasite: @item.Kapasite</p>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            @Html.ActionLink("Düzenle", "_Edit", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" }) |
+                            @Html.ActionLink("Detaylar", "Details", new { id = item.Id }, new { @class = "btn btn-info btn-sm" }) |
+                            @Html.ActionLink("Sil", "_Delete", new { id = item.Id }, new { @class = "btn btn-danger btn-sm" })
+                        </div>
+                    </div>
+                     <div class="d-flex justify-content-between mt-3">
+                        @if(masaClass == "yesil")
+                        {
+                            <button class="btn btn-light btn-sm siparis-ekle" data-id="@item.Id">Sipariş Ekle</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-light btn-sm odeme-yap" data-id="@item.Id">Ödeme Yap</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 
-        $("#btnDelete").click(function (e) {
+<div class="pagination mt-4 d-flex justify-content-center">
+    @if (ViewBag.CurrentPage > 1)
+    {
+        <a class="btn btn-light" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })">Önceki</a>
+    }
+    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+    {
+        <a class="btn btn-light" href="@Url.Action("Index", new { page = i })">@i</a>
+    }
+    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+    {
+        <a class="btn btn-light" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })">Sonraki</a>
+    }
+</div>
 
-            var url = $(this).data('url');
+<div id="siparisModalContainer"></div>
+<div id="musteriEkleModalContainer"></div>
+<div id="odemeYapModalContainer"></div>
+ 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
 
-            var modal = $("#modal-view");
+        const siparisEkleButtons = document.querySelectorAll(".siparis-ekle");
+        siparisEkleButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const masaId = this.getAttribute("data-id");
 
-            $.get(url).done(function (data) {
-                modal.html(data);
-                modal.find('.modal').modal('show');
+                // Fetch API ile controller'a istek gönder
+                fetch(`/Masa/_SiparisEkle/${masaId}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        // Partial view'i modala yerleştir
+                        document.getElementById("siparisModalContainer").innerHTML = data;
+                        // Modalı göster
+                        const siparisModal = new bootstrap.Modal(document.getElementById("siparisModal"));
+                        siparisModal.show();
+                    })
+                    .catch(error => {
+                        alert("Bir hata oluştu!");
+                    });
+                });
             });
         });
-    </script>
-}
+
+        const odemeYapButtons = document.querySelectorAll(".odeme-yap");
+        odemeYapButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const masaId = this.getAttribute("data-id");
+                    
+                // Fetch API ile controller'a istek gönder
+                fetch(`/Masa/_OdemeYap/${masaId}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        // Partial view'i modala yerleştir
+                        document.getElementById("odemeYapModalContainer").innerHTML = data;
+                        // Modalı göster
+                        const odemeModal = new bootstrap.Modal(document.getElementById("odemeYapModal"));
+                        odemeModal.show();
+                        addEventListenersToModal();
+                    })
+                    .catch(error => {
+                        alert("Bir hata oluştu!");
+                    });
+            });
+        });
+
+        function addEventListenersToModal() {
+            document.querySelectorAll('input[name^="SelectedSiparisDetaylar"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updateTotalAmount);
+            });
+
+            document.getElementById('selectAll')?.addEventListener('change', function () {
+                const checkboxes = document.querySelectorAll('input[name^="SelectedSiparisDetaylar"]');
+                checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+                updateTotalAmount();
+            });
+        }
+
+        function updateTotalAmount() {
+            const checkboxes = document.querySelectorAll('input[name^="SelectedSiparisDetaylar"]:checked');
+            let total = 0;
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const totalCell = row.querySelector('td:last-child').innerText.replace('TL', '').trim().replace(',', '.');
+                total += parseFloat(totalCell);
+            });
+            document.getElementById('totalAmount').innerText = `Toplam: ${total.toFixed(2).replace('.', ',')} TL`;
+        }
+
+
+
+    function renderCreateMusteriModal(){
+        fetch(`/Masa/_MusteriEkle/`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("musteriEkleModalContainer").innerHTML = data;
+                const musteriModal = new bootstrap.Modal(document.getElementById("createMusteriModal"));
+                musteriModal.show();
+            })
+            .catch(error => {
+                alert("Bir hata oluştu!");
+            });
+    }
+    function addSiparisDetay() {
+        const firstDetail = document.querySelector('.siparis-detay');
+        const clonedDetail = firstDetail.cloneNode(true);
+
+        const inputs = clonedDetail.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if (input.tagName === 'SELECT') {
+                input.selectedIndex = 0; 
+            } else if (input.tagName === 'INPUT') {
+                input.value = ''; 
+            }
+        });
+
+        const detaylar = document.querySelectorAll('.siparis-detay').length;
+        clonedDetail.querySelectorAll('select, input').forEach(input => {
+            const name = input.getAttribute('name');
+            if (name) {
+                input.setAttribute('name', name.replace(/\[\d+\]/, `[${detaylar}]`));
+            }
+        });
+
+        document.getElementById('siparisDetayContainer').appendChild(clonedDetail);
+    }
+
+    function removeSiparisDetay(button) {
+        const detaylar = document.querySelectorAll('.siparis-detay');
+        if (detaylar.length > 1) {
+            button.closest('.siparis-detay').remove();
+        } else {
+            alert('En az bir sipariş detay kalmalıdır.');
+        }
+    }
+
+</script>
+
+<style>
+    /* Soft ve Gradyan Kırmızı */
+    .kirmizi {
+        background: linear-gradient(135deg, #ff7f7f, #f44336); /* Soft kırmızı ve gradyan */
+        color: white;
+        border-left: 5px solid #d32f2f;
+        transition: all 0.3s ease;
+    }
+
+    /* Soft ve Gradyan Yeşil */
+    .yesil {
+        background: linear-gradient(135deg, #81c784, #4caf50); /* Soft yeşil ve gradyan */
+        color: white;
+        border-left: 5px solid #388e3c;
+        transition: all 0.3s ease;
+    }
+
+    /* Kart Hover Etkisi */
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Pagination Stili */
+    .pagination .btn {
+        margin: 0 5px;
+    }
+
+    /* Sayfa Başlığı */
+    h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* Action Buttonları */
+    .btn-sm {
+        margin-right: 5px;
+    }
+
+    /* Kart Başlık ve Text Stili */
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-size: 1rem;
+    }
+</style>

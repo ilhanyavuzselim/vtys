@@ -1,6 +1,5 @@
 ﻿using Domain.masa;
 using Domain.musteri;
-using Domain.odeme;
 using Domain.personel;
 using Domain.siparisdetay;
 using System.Text.Json.Serialization;
@@ -14,6 +13,7 @@ namespace Domain.siparis
         public Guid? MusteriID { get; set; }
         public Guid PersonelID { get; set; }
         public DateTime SiparisTarihi { get; set; } = DateTime.Now;
+        public bool OdendiMi { get; set; }
         [JsonIgnore]
         public Masa? Masa { get; set; }
         [JsonIgnore]

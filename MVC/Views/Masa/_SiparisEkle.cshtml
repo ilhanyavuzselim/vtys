@@ -1,0 +1,74 @@
+﻿@model Domain.masa.Masa
+
+<div class="modal fade" id="siparisModal" tabindex="-1" role="dialog" aria-labelledby="siparisModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="siparisModalLabel">Sipariş Ekle - Masa No: @Model.MasaNo</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Form post etmek için gerekli action ve method -->
+                <form id="siparisForm" asp-controller="Masa" asp-action="CreateSiparis" method="post">
+                    <input type="hidden" name="MasaID" value="@Model.Id" />
+                    <!-- Müşteri Seçimi -->
+                    <div class="mb-3">
+                        <label for="MusteriID" class="form-label">Müşteri</label>
+                        <select class="form-control" id="MusteriID" name="MusteriID" required>
+                            <option value="">Müşteri Seçiniz</option>
+                            @foreach (var musteri in ViewBag.Musteriler)
+                            {
+                                <option value="@musteri.Id">@musteri.Ad @musteri.Soyad</option>
+                            }
+                        </select>
+                        <button id="btnCreateMusteri" onclick="renderCreateMusteriModal()" class="btn btn-info mt-2" type="button">Müşteri Ekle</button>
+                    </div>
+
+                    <!-- Personel Seçimi -->
+                    <div class="mb-3">
+                        <label for="PersonelID" class="form-label">Personel</label>
+                        <select class="form-control" id="PersonelID" name="PersonelID" required>
+                            <option value="">Personel Seçiniz</option>
+                            @foreach (var personel in ViewBag.Personeller)
+                            {
+                                <option value="@personel.Id">@personel.Ad @personel.Soyad</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Sipariş Detayları -->
+                    <h5>Sipariş Detayları</h5>
+                    <div id="siparisDetayContainer">
+                        <!-- İlk Sipariş Detay Alanı -->
+                        <div class="row mb-3 siparis-detay">
+                            <div class="col-md-6">
+                                <label for="MenuID" class="form-label">Menu</label>
+                                <select class="form-control" name="SiparisDetaylar[0].MenuID" required>
+                                    <option value="">Menü Seçiniz</option>
+                                    @foreach (var menu in ViewBag.Menuler)
+                                    {
+                                        <option value="@menu.Id">@menu.Ad - @menu.Fiyat ₺</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="Adet_1" class="form-label">Adet</label>
+                                <input type="number" class="form-control" name="SiparisDetaylar[0].Adet" min="1" required />
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" onclick="removeSiparisDetay(this)" class="btn btn-danger remove-detay">Sil</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addSiparisDetay()" class="btn btn-secondary mb-3" id="addDetay">Sipariş Detay Ekle</button>
+                    <br />
+
+                    <!-- Sipariş Ekle Butonu -->
+                    <button type="submit" class="btn btn-primary">Siparişi Ekle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

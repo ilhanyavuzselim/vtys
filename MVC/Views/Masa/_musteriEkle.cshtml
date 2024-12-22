@@ -1,0 +1,35 @@
+﻿@model Domain.musteri.Musteri
+
+<div class="modal fade" id="createMusteriModal" tabindex="-1" role="dialog" aria-labelledby="createMusteriModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createMusteriModalLabel">Müşteri Ekle</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="siparisForm" asp-controller="Masa" asp-action="CreateMusteri" method="post">
+                    <div class="mb-3">
+                        <label for="Ad" class="form-label">Müşteri Adı</label>
+                        <input type="text" id="Ad" name="Ad" class="form-control" />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="Soyad" class="form-label">Müşteri Soyadı</label>
+                        <input type="text" id="Soyad" name="Soyad" class="form-control" />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="Telefon" class="form-label">Müşteri Telefon</label>
+                        <input type="tel" id="Telefon" name="Telefon" class="form-control" />
+                    </div>
+
+                    <!-- Müşteri Ekle Butonu -->
+                    <button type="submit" class="btn btn-primary">Müşteri Ekle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

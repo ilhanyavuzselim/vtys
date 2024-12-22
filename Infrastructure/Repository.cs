@@ -42,6 +42,35 @@ namespace Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> GetAllByPredicatesAndIncludes(
+            Expression<Func<T, bool>>[] predicates = null, // Filtreleme için predicate'ler
+            Expression<Func<T, object>>[] includes = null // Include işlemleri için expression'lar
+        )
+        {
+            IQueryable<T> query = _dbSet;
+
+            // Apply all provided predicates using `Where`
+            if (predicates != null)
+            {
+                foreach (var predicate in predicates)
+                {
+                    query = query.Where(predicate);
+                }
+            }
+
+            // Apply all provided includes using `Include`
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);  // Expression<Func<T, object>> kullanarak Include
+                }
+            }
+
+            return await query.ToListAsync();
+        }
+
+
 
         // GetByIdAsync ile ilişkili verileri yüklemek
         public async Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includeProperties)

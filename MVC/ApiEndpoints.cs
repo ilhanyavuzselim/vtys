@@ -104,10 +104,12 @@
         // SiparisController URL'leri
         public static string SiparisControllerBaseUrl =>$"{ApiBaseUrl}/Siparis";
         public static string SiparisControllerGetUrl =>SiparisControllerBaseUrl;
+        public static string SiparisControllerGetSiparisByMasaIdUrl => $"{SiparisControllerBaseUrl}/GetSiparisByMasaId/";
         public static string SiparisControllerGetByIdUrl =>$"{SiparisControllerBaseUrl}/";
         public static string SiparisControllerCreateUrl =>SiparisControllerBaseUrl;
         public static string SiparisControllerUpdateUrl =>$"{SiparisControllerBaseUrl}/";
         public static string SiparisControllerDeleteUrl =>$"{SiparisControllerBaseUrl}/";
+        public static string SiparisControllerCompleteSiparisDetayListByIdListUrl =>$"{SiparisControllerBaseUrl}/CompleteSiparisDetayListByIdList/";
 
         // SiparisDetayController URL'leri
         public static string SiparisDetayControllerBaseUrl =>$"{ApiBaseUrl}/SiparisDetay";
